@@ -13,6 +13,7 @@ class Miner {
     const validTxs = this.validTransactions();
     //add reward and dividend Transaction
 
+    // mine block, clear mempool and broadcast
     this.blockchain.addMinedBlock(validTxs);
     this.mempool.clearMempool();
     this.p2pServer.broadcastChain();

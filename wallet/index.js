@@ -114,6 +114,12 @@ class Wallet {
     }
     return balance;
   }
+
+  static bankWallet() {
+    const bankWallet = new this({ priv: null, pub: null }, this.blockchain);
+    bankWallet.address = 'BLOCKCHAIN_BANK';
+    return bankWallet;
+  }
 }
 
 module.exports = Wallet;

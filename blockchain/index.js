@@ -59,6 +59,20 @@ class Blockchain {
     }
     this.chain = newChainArray;
   }
+
+  knownAddresses() {
+    const knownAddresses = {};
+    for (let i = 1; i < this.chain.length; i++) {
+      let block = this.chain[i];
+      block.data.forEach((tx) => {
+        Object.keys(tx.outputs).forEach((address) => {
+          if (!knownAddresses[address]) {
+            knownAddresses[address] = address;
+          }
+        });
+      });
+    }
+  }
 }
 
 module.exports = Blockchain;

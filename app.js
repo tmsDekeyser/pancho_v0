@@ -44,14 +44,15 @@ app.get('/valid-transactions', (req, res) => {
 
 app.post('/mine', (req, res) => {
   //add block locally and clear mempool locally
-  bc.addMinedBlock(mempool.transactions);
-  mempool.clearMempool();
-  Blockchain.isValidChain(bc.chain); //only for testing purposes
+  //bc.addMinedBlock(mempool.transactions);
+  //mempool.clearMempool();
+  //Blockchain.isValidChain(bc.chain); //only for testing purposes
   //p2pServer.syncChains();
   //send messages to peers to do the same
-  p2pServer.broadcastChain();
-  p2pServer.broadcastClearTransactions();
+  //p2pServer.broadcastChain();
+  //p2pServer.broadcastClearTransactions();
   //show (new) blockchain
+  miner.mine();
   res.redirect('/blocks');
 });
 
