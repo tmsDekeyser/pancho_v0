@@ -14,4 +14,7 @@ const block = new Block({
 
 const bc = new Blockchain();
 
-console.log('Block: ' + JSON.stringify(block));
+bc.addMinedBlock('first real block');
+bc.addBlock(block);
+
+console.log('Block: ' + JSON.stringify(bc));
