@@ -7,6 +7,7 @@ const Blockchain = require('./blockchain');
 const P2pServer = require('./p2pserver');
 const Wallet = require('./wallet');
 const Mempool = require('./wallet/mempool');
+const Miner = require('./miner');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -18,6 +19,7 @@ const bc = new Blockchain();
 const wallet = new Wallet({ priv: null, pub: null }, bc);
 const mempool = new Mempool();
 const p2pServer = new P2pServer(bc, mempool);
+const miner = new Miner({ blockchain: bc, mempool, p2pServer, wallet });
 
 // Routes
 app.get('/', (req, res) => {
@@ -34,6 +36,10 @@ app.get('/wallet-info', (req, res) => {
 
 app.get('/mempool', (req, res) => {
   res.json(mempool.transactions);
+});
+
+app.get('/valid-transactions', (req, res) => {
+  res.json(miner.validTransactions());
 });
 
 app.post('/mine', (req, res) => {

@@ -4,11 +4,6 @@ class Mempool {
   }
 
   addOrUpdateTransaction(tx) {
-    if (!Mempool.verifyTransaction(tx)) {
-      console.error('Invalid Transaction');
-      return;
-    }
-
     let prevTxWithId = this.findTransaction(tx.id);
 
     if (prevTxWithId) {
@@ -29,10 +24,6 @@ class Mempool {
   clearMempool() {
     console.log('clearing transactions');
     this.transactions = [];
-  }
-
-  static verifyTransaction(tx) {
-    return true;
   }
 }
 
