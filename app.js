@@ -42,16 +42,11 @@ app.get('/valid-transactions', (req, res) => {
   res.json(miner.validTransactions());
 });
 
+app.get('/addressbook', (req, res) => {
+  res.json(bc.knownAddresses());
+});
+
 app.post('/mine', (req, res) => {
-  //add block locally and clear mempool locally
-  //bc.addMinedBlock(mempool.transactions);
-  //mempool.clearMempool();
-  //Blockchain.isValidChain(bc.chain); //only for testing purposes
-  //p2pServer.syncChains();
-  //send messages to peers to do the same
-  //p2pServer.broadcastChain();
-  //p2pServer.broadcastClearTransactions();
-  //show (new) blockchain
   miner.mine();
   res.redirect('/blocks');
 });
@@ -59,7 +54,7 @@ app.post('/mine', (req, res) => {
 app.post('/transact', (req, res) => {
   const { recipient, amount } = req.body;
   const tx = wallet.createTransaction(recipient, amount, mempool);
-  //console.log(tx.input.address);
+
   if (tx) {
     mempool.addOrUpdateTransaction(tx);
     p2pServer.broadcastTransaction(tx);

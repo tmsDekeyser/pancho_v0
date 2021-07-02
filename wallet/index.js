@@ -2,7 +2,6 @@ const EC = require('elliptic').ec;
 const STARTING_BALANCE = 100;
 
 const Transaction = require('./transaction');
-const Mempool = require('./mempool'); // Do I need this?
 
 const ec = new EC('secp256k1');
 
@@ -45,7 +44,7 @@ class Wallet {
     let tx = mempool.existingTransaction(this.address);
 
     if (tx) {
-      if (senderBalanceOnChain - tx.outputs[this.address < amount]) {
+      if (senderBalanceOnChain - tx.outputs[this.address] < amount) {
         console.error('Not enough funds to complete transaction');
         return;
       } else {
@@ -69,6 +68,9 @@ class Wallet {
   }
 
   calculateBalance() {
+    if (this.address === 'BLOCKCHAIN_BANK') {
+      return STARTING_BALANCE;
+    }
     let balance = STARTING_BALANCE;
     let txList = [];
     let lastTx = 0;
@@ -115,8 +117,8 @@ class Wallet {
     return balance;
   }
 
-  static bankWallet() {
-    const bankWallet = new this({ priv: null, pub: null }, this.blockchain);
+  static bankWallet(blockchain) {
+    const bankWallet = new this({ priv: null, pub: null }, blockchain);
     bankWallet.address = 'BLOCKCHAIN_BANK';
     return bankWallet;
   }

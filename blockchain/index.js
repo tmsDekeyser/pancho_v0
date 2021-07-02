@@ -62,6 +62,9 @@ class Blockchain {
 
   knownAddresses() {
     const knownAddresses = {};
+    if (this.chain.length < 2) {
+      return knownAddresses;
+    }
     for (let i = 1; i < this.chain.length; i++) {
       let block = this.chain[i];
       block.data.forEach((tx) => {
@@ -72,6 +75,7 @@ class Blockchain {
         });
       });
     }
+    return knownAddresses;
   }
 }
 

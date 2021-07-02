@@ -6,7 +6,6 @@ Project Description
 
 ### Todo
 
-- [ ] Miner + dividend  
 - [ ] bootstrapping  
 - [ ] address mapping  
 
@@ -16,6 +15,7 @@ Project Description
 
 ### Done ✓
 
+- [x] Miner + dividend  
 - [x] Broadcast Tx  
 - [x] Calculate Balance  
 

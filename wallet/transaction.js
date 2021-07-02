@@ -8,13 +8,6 @@ class Transaction {
     this.input = this.createInput(senderWallet);
   }
 
-  createOutputs(senderWallet, recipient, amount) {
-    const outputs = {};
-    outputs[recipient] = amount;
-    outputs[senderWallet.address] = senderWallet.balance - amount;
-    return outputs;
-  }
-
   createInput(senderWallet) {
     return {
       time: Date.now(),
@@ -22,6 +15,13 @@ class Transaction {
       address: senderWallet.address,
       signature: 'Unsigned',
     };
+  }
+
+  createOutputs(senderWallet, recipient, amount) {
+    const outputs = {};
+    outputs[recipient] = amount;
+    outputs[senderWallet.address] = senderWallet.calculateBalance() - amount;
+    return outputs;
   }
 
   updateTransaction(senderWallet, recipient, amount) {
