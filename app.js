@@ -8,6 +8,7 @@ const P2pServer = require('./p2pserver');
 const Wallet = require('./wallet');
 const Mempool = require('./wallet/mempool');
 const Miner = require('./miner');
+const BlockExplorer = require('./blockchain/block-explorer');
 
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -31,7 +32,11 @@ app.get('/blocks', (req, res) => {
 });
 
 app.get('/wallet-info', (req, res) => {
-  res.json({ address: wallet.address, balance: wallet.calculateBalance() });
+  res.json({
+    address: wallet.address,
+    balance: wallet.calculateBalance(),
+    flow: BlockExplorer.calculateFlow(bc, wallet.address),
+  });
 });
 
 app.get('/mempool', (req, res) => {

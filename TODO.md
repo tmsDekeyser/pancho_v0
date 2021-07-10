@@ -6,19 +6,20 @@ Project Description
 
 ### Todo
 
-- [ ] flow smart contract  
 - [ ] bootstrapping  
 - [ ] login/authentication  
 - [ ] Multiple Node wallets  
 
 ### In Progress
 
-- [ ] Validation  
-- [ ] address mapping  
+- [ ] Block explorer  
 
 ### Done ✓
 
 - [x] Miner + dividend  
 - [x] Broadcast Tx  
 - [x] Calculate Balance  
+- [x] Validation  
+- [x] address mapping  
+- [x] flow smart contract  
 

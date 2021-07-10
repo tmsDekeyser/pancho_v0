@@ -2,6 +2,8 @@ const CryptoUtil = require('../util/cryptoUtil');
 const { STARTING_BALANCE } = require('../config/config');
 
 const Transaction = require('./transaction');
+const BlockExplorer = require('../blockchain/block-explorer');
+const Block = require('../blockchain/block');
 
 class Wallet {
   constructor({ priv, pub }, blockchain) {
@@ -18,7 +20,8 @@ class Wallet {
   toString() {
     return `Wallet -
         Address (public key): ${this.address.toString()},
-        Balance: ${this.balance.toString()}`;
+        Balance: ${this.balance.toString()}
+        Flow: ${BlockExplorer.calculateFlow(this.blockchain, this.address)}`;
   }
 
   sign(dataHash) {

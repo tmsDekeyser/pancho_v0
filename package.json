@@ -4,7 +4,8 @@
   "description": "A simple version of the pancho learning validation system",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "server": "nodemon app.js",
+    "peer": "HTTP_PORT=3002 P2P_PORT=5002 PEERS=ws://localhost:5001 nodemon app.js"
   },
   "repository": {
     "type": "git",
