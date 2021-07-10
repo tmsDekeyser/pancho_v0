@@ -1,7 +1,8 @@
 const Transaction = require('./wallet/transaction');
 const Wallet = require('./wallet');
-const DIVIDEND = require('./config/config');
-const REWARD = require('./config/config');
+const { DIVIDEND } = require('./config/config');
+const { REWARD } = require('./config/config');
+const CryptoUtil = require('./util/cryptoUtil');
 
 class Miner {
   constructor({ blockchain, wallet, mempool, p2pServer }) {
@@ -43,20 +44,7 @@ class Miner {
 
   validTransactions() {
     return this.mempool.transactions.filter((tx) => {
-      // input amount equals output amounts
-      const outputTotals = Object.values(tx.outputs).reduce((total, amount) => {
-        return total + amount;
-      }, 0);
-
-      const validAmounts = outputTotals === tx.input.balance;
-      //& signature is valid
-      const signatureValid = this.wallet.verifySignature({
-        publicKeyString: tx.input.address,
-        data: Transaction.txHash(tx.outputs),
-        signature: tx.input.signature,
-      });
-
-      return validAmounts && signatureValid;
+      return Transaction.verifyTx(tx);
     });
   }
 

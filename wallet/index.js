@@ -1,14 +1,14 @@
-const EC = require('elliptic').ec;
+const CryptoUtil = require('../util/cryptoUtil');
 const { STARTING_BALANCE } = require('../config/config');
 
 const Transaction = require('./transaction');
 
-const ec = new EC('secp256k1');
-
 class Wallet {
   constructor({ priv, pub }, blockchain) {
     this.keyPair =
-      priv && pub ? this.reGenKeyPair({ priv, pub }) : this.genKeyPair();
+      priv && pub
+        ? CryptoUtil.reGenKeyPair({ priv, pub })
+        : CryptoUtil.genKeyPair();
     this.address = this.keyPair.getPublic().encode('hex');
     this.blockchain = blockchain;
     this.balance = this.calculateBalance();
@@ -19,18 +19,6 @@ class Wallet {
     return `Wallet -
         Address (public key): ${this.address.toString()},
         Balance: ${this.balance.toString()}`;
-  }
-
-  genKeyPair() {
-    return ec.genKeyPair();
-  }
-
-  reGenKeyPair({ priv, pub }) {
-    return ec.keyPair({ priv, pub, privEnc: 'hex', pubEnc: 'hex' });
-  }
-
-  keyFromPublic(publicKeyString) {
-    return ec.keyFromPublic(publicKeyString, 'hex');
   }
 
   sign(dataHash) {
@@ -60,11 +48,6 @@ class Wallet {
     }
     tx.input.signature = this.sign(Transaction.txHash(tx.outputs));
     return tx;
-  }
-
-  verifySignature({ publicKeyString, data, signature }) {
-    const key = this.keyFromPublic(publicKeyString);
-    return key.verify(data, signature);
   }
 
   calculateBalance() {

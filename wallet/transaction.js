@@ -1,5 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
+const CryptoUtil = require('../util/cryptoUtil');
 
 class Transaction {
   constructor(senderWallet, recipient, amount) {
@@ -36,6 +37,23 @@ class Transaction {
       this.outputs[senderWallet.address] -= amount;
     }
     // Do I return this?
+  }
+
+  static verifyTx(tx) {
+    // input amount equals output amounts
+    const outputTotals = Object.values(tx.outputs).reduce((total, amount) => {
+      return total + amount;
+    }, 0);
+
+    const validAmounts = outputTotals === tx.input.balance;
+    //& signature is valid
+    const signatureValid = CryptoUtil.verifySignature({
+      publicKeyString: tx.input.address,
+      data: Transaction.txHash(tx.outputs),
+      signature: tx.input.signature,
+    });
+
+    return validAmounts && signatureValid;
   }
 
   static txHash(outputs) {

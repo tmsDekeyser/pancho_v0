@@ -1,5 +1,6 @@
 const Block = require('./block');
 require('colors');
+const Transaction = require('../wallet/transaction');
 
 class Blockchain {
   constructor() {
@@ -55,11 +56,38 @@ class Blockchain {
       !Blockchain.isValidChain(newChainArray) ||
       newChainArray.length <= this.chain.length
     ) {
-      return;
+      return 'Chain invalid, not replaced';
     }
     //also check the transactions in the blocks that are different
     // from the local version of the blockchain
+    if (
+      this.getLatestBlock().index !== 0 &&
+      !this.checkTxs(
+        newChainArray.slice(
+          this.getLatestBlock().index + 1,
+          newChainArray.length
+        )
+      )
+    ) {
+      return 'Chain invalid, not replaced';
+    }
+
     this.chain = newChainArray;
+  }
+
+  checkTxs(subChain) {
+    console.log(subChain);
+    subChain.forEach((block) => {
+      block.data.forEach((tx) => {
+        if (tx.input.address !== 'BLOCKCHAIN_BANK') {
+          if (!Transaction.verifyTx(tx)) {
+            return false;
+          }
+        }
+      });
+    });
+    console.log('Transaction in new blocks are valid');
+    return true;
   }
 
   knownAddresses() {
