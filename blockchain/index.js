@@ -24,7 +24,7 @@ class Blockchain {
   static isValidChain(chain) {
     if (JSON.stringify(chain[0]) !== JSON.stringify(Block.genesis())) {
       console.log('Genesis block does not match'.red);
-      console.log(chain);
+      //console.log(chain);
       return false;
     }
     for (let i = 1; i < chain.length; i++) {
@@ -57,6 +57,8 @@ class Blockchain {
     ) {
       return;
     }
+    //also check the transactions in the blocks that are different
+    // from the local version of the blockchain
     this.chain = newChainArray;
   }
 

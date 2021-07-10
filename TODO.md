@@ -6,12 +6,15 @@ Project Description
 
 ### Todo
 
+- [ ] flow smart contract  
 - [ ] bootstrapping  
-- [ ] address mapping  
+- [ ] login/authentication  
+- [ ] Multiple Node wallets  
 
 ### In Progress
 
 - [ ] Validation  
+- [ ] address mapping  
 
 ### Done ✓
 

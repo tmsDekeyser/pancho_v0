@@ -25,6 +25,19 @@ class Mempool {
     console.log('clearing transactions');
     this.transactions = [];
   }
+
+  clearMempoolPartial(idList) {
+    this.transactions = this.transactions.filter((tx) => {
+      let bool = true;
+
+      idList.forEach((id) => {
+        bool = bool && !(tx.id === id);
+        //console.log(`Tx ID: ${tx.id}, ID: ${id}, bool: ${bool}`);
+      });
+
+      return bool;
+    });
+  }
 }
 
 module.exports = Mempool;

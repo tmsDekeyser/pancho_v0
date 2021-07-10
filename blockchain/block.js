@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const DIFFICULTY = 3;
+const { DIFFICULTY } = require('../config/config');
 
 class Block {
   constructor({ index, timestamp, lastHash, hash, nonce, data }) {
@@ -18,7 +18,7 @@ class Block {
       lastHash: '0xplaceholder',
       nonce: 0,
       hash: '',
-      data: 'Genesis data',
+      data: 'Genesis data', // Do I add a dummy transaction instead to avoid type Errors?
     });
 
     const { index, timestamp, lastHash, nonce, data } = genesisBlock;

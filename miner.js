@@ -1,7 +1,7 @@
 const Transaction = require('./wallet/transaction');
 const Wallet = require('./wallet');
-const DIVIDEND = 20;
-const REWARD = 50;
+const DIVIDEND = require('./config/config');
+const REWARD = require('./config/config');
 
 class Miner {
   constructor({ blockchain, wallet, mempool, p2pServer }) {

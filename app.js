@@ -42,8 +42,12 @@ app.get('/valid-transactions', (req, res) => {
   res.json(miner.validTransactions());
 });
 
-app.get('/addressbook', (req, res) => {
+app.get('/known-addresses', (req, res) => {
   res.json(bc.knownAddresses());
+});
+
+app.get('/contacts', (req, res) => {
+  res.json(wallet.addressBook);
 });
 
 app.post('/mine', (req, res) => {
@@ -52,7 +56,10 @@ app.post('/mine', (req, res) => {
 });
 
 app.post('/transact', (req, res) => {
-  const { recipient, amount } = req.body;
+  const { amount } = req.body;
+  let { recipient } = req.body;
+  recipient = wallet.addressBook[recipient] || recipient;
+
   const tx = wallet.createTransaction(recipient, amount, mempool);
 
   if (tx) {
@@ -61,6 +68,14 @@ app.post('/transact', (req, res) => {
   }
 
   res.redirect('/mempool');
+});
+
+app.post('/contacts', (req, res) => {
+  const { address, alias } = req.body;
+
+  wallet.addressBook[alias] = address;
+
+  res.redirect('/contacts');
 });
 
 //listening to servers

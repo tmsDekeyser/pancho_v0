@@ -1,5 +1,5 @@
 const EC = require('elliptic').ec;
-const STARTING_BALANCE = 100;
+const { STARTING_BALANCE } = require('../config/config');
 
 const Transaction = require('./transaction');
 
@@ -9,10 +9,10 @@ class Wallet {
   constructor({ priv, pub }, blockchain) {
     this.keyPair =
       priv && pub ? this.reGenKeyPair({ priv, pub }) : this.genKeyPair();
-    //this.keyPair = this.genKeyPair();
     this.address = this.keyPair.getPublic().encode('hex');
     this.blockchain = blockchain;
     this.balance = this.calculateBalance();
+    this.addressBook = {};
   }
 
   toString() {
@@ -68,6 +68,9 @@ class Wallet {
   }
 
   calculateBalance() {
+    //Calculates the balance of a wallet based on the blockchain and UTXO model
+    //We do a reverse for loop to find the last tx as sender and store txs as recipients
+
     if (this.address === 'BLOCKCHAIN_BANK') {
       return STARTING_BALANCE;
     }
@@ -76,6 +79,8 @@ class Wallet {
     let lastTx = 0;
     let i = this.blockchain.chain.length - 1;
 
+    //Check if blockchain has at least 1 block other than genesis
+    //if not, return starting balance
     if (this.blockchain.chain.length > 1) {
       do {
         let block = this.blockchain.chain[i];
