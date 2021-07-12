@@ -6,12 +6,12 @@ Project Description
 
 ### Todo
 
-- [ ] bootstrapping  
 - [ ] login/authentication  
 - [ ] Multiple Node wallets  
 
 ### In Progress
 
+- [ ] bootstrapping  
 - [ ] Block explorer  
 
 ### Done ✓
