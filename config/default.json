@@ -1,0 +1,4 @@
+{
+  "mongoURI": "mongodb+srv://thomaspancho:mongo457507@cluster0.helmn.mongodb.net/pancho-demo?retryWrites=true&w=majority",
+  "JWT_SECRET": "lqskghlkshg"
+}

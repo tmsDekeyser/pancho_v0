@@ -19,9 +19,11 @@
   "homepage": "https://github.com/tmsDekeyser/pancho_v0#readme",
   "dependencies": {
     "colors": "^1.4.0",
+    "config": "^3.3.6",
     "elliptic": "^6.5.4",
     "express": "^4.17.1",
     "helmet": "^4.6.0",
+    "mongoose": "^5.13.2",
     "morgan": "^1.10.0",
     "uuid": "^8.3.2",
     "ws": "^7.4.6"

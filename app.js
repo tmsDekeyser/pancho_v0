@@ -10,10 +10,14 @@ const Mempool = require('./wallet/mempool');
 const Miner = require('./miner');
 const BlockExplorer = require('./blockchain/block-explorer');
 
+const connectDB = require('./config/db');
+
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 //app.use(morgan, helmet);
+
+connectDB();
 
 const HTTP_PORT = process.env.HTTP_PORT || 3001;
 const bc = new Blockchain();
@@ -55,6 +59,10 @@ app.get('/contacts', (req, res) => {
   res.json(wallet.addressBook);
 });
 
+app.get('/peers', (req, res) => {
+  res.json(p2pServer.peers);
+});
+
 app.post('/mine', (req, res) => {
   miner.mine();
   res.redirect('/blocks');
@@ -86,7 +94,7 @@ app.post('/contacts', (req, res) => {
 //listening to servers
 
 app.listen(HTTP_PORT, () => {
-  console.log(`Server running on port ${HTTP_PORT}`);
+  console.log(`Server running on port ${HTTP_PORT}`.yellow);
 });
 
 p2pServer.listen();

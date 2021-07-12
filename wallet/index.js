@@ -3,7 +3,6 @@ const { STARTING_BALANCE } = require('../config/config');
 
 const Transaction = require('./transaction');
 const BlockExplorer = require('../blockchain/block-explorer');
-const Block = require('../blockchain/block');
 
 class Wallet {
   constructor({ priv, pub }, blockchain) {
