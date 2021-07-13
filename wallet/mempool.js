@@ -1,6 +1,6 @@
 class Mempool {
   constructor() {
-    this.transactions = [];
+    this.transactions = []; //could be a map (object) for lookup optimization
   }
 
   addOrUpdateTransaction(tx) {
@@ -13,10 +13,12 @@ class Mempool {
     }
   }
 
+  //Find tx based on ID
   findTransaction(id) {
     return this.transactions.find((tx) => tx.id === id);
   }
 
+  //Find tx based on address
   existingTransaction(address) {
     return this.transactions.find((tx) => tx.input.address === address);
   }
@@ -26,13 +28,14 @@ class Mempool {
     this.transactions = [];
   }
 
+  //When not all txs in mempool are added to blocks (not currently used)
   clearMempoolPartial(idList) {
+    console.log('clearing transaction that are added to new block');
     this.transactions = this.transactions.filter((tx) => {
       let bool = true;
 
       idList.forEach((id) => {
         bool = bool && !(tx.id === id);
-        //console.log(`Tx ID: ${tx.id}, ID: ${id}, bool: ${bool}`);
       });
 
       return bool;

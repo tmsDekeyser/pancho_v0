@@ -55,44 +55,4 @@ class Miner {
   }
 }
 
-// class DividendTx extends Transaction {
-//   constructor(senderWallet, recipient, numberOfDividendRecipients) {
-//     super(senderWallet, recipient, DIVIDEND);
-//     this.correct(recipient, numberOfDividendRecipients);
-//     this.signDividendTx(senderWallet);
-//   }
-
-//   correct(recipient, numberOfDividendRecipients) {
-//     this.input.balance = DIVIDEND * numberOfDividendRecipients;
-//     delete this.outputs[recipient];
-//     delete this.outputs['BLOCKCHAIN_BANK'];
-//   }
-
-//   update(senderwallet, recipient) {
-//     this.outputs[recipient] = DIVIDEND;
-//     this.signDividendTx(senderwallet);
-//   }
-
-//   signDividendTx(senderWallet) {
-//     this.input.signature = senderWallet.sign(Transaction.txHash(this.outputs));
-//   }
-// }
-
-// class RewardTx extends Transaction {
-//   constructor(senderWallet, recipient) {
-//     super(senderWallet, recipient, REWARD);
-//     this.correct();
-//     this.signRewardTX(senderWallet);
-//   }
-
-//   correct() {
-//     this.input.balance = REWARD;
-//     delete this.outputs['BLOCKCHAIN_BANK'];
-//   }
-
-//   signRewardTX(senderWallet) {
-//     this.input.signature = senderWallet.sign(Transaction.txHash(this.outputs));
-//   }
-// }
-
 module.exports = Miner;

@@ -8,8 +8,10 @@ const Mempool = require('./wallet/mempool');
 const Miner = require('./miner/');
 const BlockExplorer = require('./blockchain/block-explorer');
 
+//MongoDB database to store user profiles (and keys in the demo, encrypted)
 const connectDB = require('./config/db');
 
+//Express.js
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -23,9 +25,38 @@ const mempool = new Mempool();
 const p2pServer = new P2pServer(bc, mempool);
 const miner = new Miner({ blockchain: bc, mempool, p2pServer, wallet });
 
+//stores wallets for SPV clients who do not run a full node
 const walletMap = {};
 
+//helper functions
+
+const walletInfoHelper = (wall) => {
+  return {
+    address: wall.address,
+    balance: wall.calculateBalance(),
+    flow: BlockExplorer.calculateFlow(bc, wall.address),
+  };
+};
+
+const transactHelper = (wall, req) => {
+  const { amount } = req.body;
+  let { recipient } = req.body;
+  recipient = wall.addressBook[recipient] || recipient;
+
+  const tx = wall.createTransaction(recipient, amount, mempool);
+
+  if (tx) {
+    mempool.addOrUpdateTransaction(tx);
+    p2pServer.broadcastTransaction(tx);
+  }
+};
+
 // Routes
+
+//-------------
+//GET methods
+//-------------
+
 app.get('/', (req, res) => {
   res.send('Welcome to the blockchain demo');
 });
@@ -35,21 +66,14 @@ app.get('/blocks', (req, res) => {
 });
 
 app.get('/wallet-info', (req, res) => {
-  res.json({
-    address: wallet.address,
-    balance: wallet.calculateBalance(),
-    flow: BlockExplorer.calculateFlow(bc, wallet.address),
-  });
+  res.json(walletInfoHelper(wallet));
 });
 
 app.get('/wallet-info/:id', (req, res) => {
   const userID = req.params.id;
   const userWallet = walletMap[userID];
-  res.json({
-    address: userWallet.address,
-    balance: userWallet.calculateBalance(),
-    flow: BlockExplorer.calculateFlow(bc, userWallet.address),
-  });
+
+  res.json(walletInfoHelper(userWallet));
 });
 
 app.get('/mempool', (req, res) => {
@@ -75,6 +99,9 @@ app.get('/contacts', (req, res) => {
 app.get('/peers', (req, res) => {
   res.json(p2pServer.peers);
 });
+// ------------
+//POST methods
+// ------------
 
 app.post('/mine', (req, res) => {
   miner.mine();
@@ -82,36 +109,15 @@ app.post('/mine', (req, res) => {
 });
 
 app.post('/transact', (req, res) => {
-  const { amount } = req.body;
-  let { recipient } = req.body;
-  recipient = wallet.addressBook[recipient] || recipient;
-
-  const tx = wallet.createTransaction(recipient, amount, mempool);
-
-  if (tx) {
-    mempool.addOrUpdateTransaction(tx);
-    p2pServer.broadcastTransaction(tx);
-  }
-
+  transactHelper(wallet, req);
   res.redirect('/mempool');
 });
 
 app.post('/transact/:id', (req, res) => {
-  const { amount } = req.body;
-  let { recipient } = req.body;
-
   const userID = req.params.id;
-
   userWallet = walletMap[userID];
-  recipient = userWallet.addressBook[recipient] || recipient;
 
-  const tx = userWallet.createTransaction(recipient, amount, mempool);
-
-  if (tx) {
-    mempool.addOrUpdateTransaction(tx);
-    p2pServer.broadcastTransaction(tx);
-  }
-
+  transactHelper(userWallet, req);
   res.redirect('/mempool');
 });
 
