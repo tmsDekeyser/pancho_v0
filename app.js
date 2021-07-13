@@ -23,6 +23,8 @@ const mempool = new Mempool();
 const p2pServer = new P2pServer(bc, mempool);
 const miner = new Miner({ blockchain: bc, mempool, p2pServer, wallet });
 
+const walletMap = {};
+
 // Routes
 app.get('/', (req, res) => {
   res.send('Welcome to the blockchain demo');
@@ -40,6 +42,16 @@ app.get('/wallet-info', (req, res) => {
   });
 });
 
+app.get('/wallet-info/:id', (req, res) => {
+  const userID = req.params.id;
+  const userWallet = walletMap[userID];
+  res.json({
+    address: userWallet.address,
+    balance: userWallet.calculateBalance(),
+    flow: BlockExplorer.calculateFlow(bc, userWallet.address),
+  });
+});
+
 app.get('/mempool', (req, res) => {
   res.json(mempool.transactions);
 });
@@ -50,6 +62,10 @@ app.get('/valid-transactions', (req, res) => {
 
 app.get('/known-addresses', (req, res) => {
   res.json(bc.knownAddresses());
+});
+
+app.get('/wallet-map', (req, res) => {
+  res.json(walletMap);
 });
 
 app.get('/contacts', (req, res) => {
@@ -78,6 +94,34 @@ app.post('/transact', (req, res) => {
   }
 
   res.redirect('/mempool');
+});
+
+app.post('/transact/:id', (req, res) => {
+  const { amount } = req.body;
+  let { recipient } = req.body;
+
+  const userID = req.params.id;
+
+  userWallet = walletMap[userID];
+  recipient = userWallet.addressBook[recipient] || recipient;
+
+  const tx = userWallet.createTransaction(recipient, amount, mempool);
+
+  if (tx) {
+    mempool.addOrUpdateTransaction(tx);
+    p2pServer.broadcastTransaction(tx);
+  }
+
+  res.redirect('/mempool');
+});
+
+app.post('/register/:id', (req, res) => {
+  const userID = req.params.id;
+  //add option to load keys
+  const userWallet = new Wallet({ priv: null }, bc);
+  walletMap[userID] = userWallet;
+
+  res.redirect('/wallet-map');
 });
 
 app.post('/contacts', (req, res) => {
