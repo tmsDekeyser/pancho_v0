@@ -1,8 +1,9 @@
-const Transaction = require('./wallet/transaction');
-const Wallet = require('./wallet');
-const { DIVIDEND } = require('./config/config');
-const { REWARD } = require('./config/config');
-const CryptoUtil = require('./util/cryptoUtil');
+const Transaction = require('../wallet/transaction');
+const Wallet = require('../wallet');
+const DividendTx = require('./dividend-transaction');
+const RewardTx = require('./reward-transaction');
+
+const CryptoUtil = require('../util/cryptoUtil');
 
 class Miner {
   constructor({ blockchain, wallet, mempool, p2pServer }) {
@@ -54,44 +55,44 @@ class Miner {
   }
 }
 
-class DividendTx extends Transaction {
-  constructor(senderWallet, recipient, numberOfDividendRecipients) {
-    super(senderWallet, recipient, DIVIDEND);
-    this.correct(recipient, numberOfDividendRecipients);
-    this.signDividendTx(senderWallet);
-  }
+// class DividendTx extends Transaction {
+//   constructor(senderWallet, recipient, numberOfDividendRecipients) {
+//     super(senderWallet, recipient, DIVIDEND);
+//     this.correct(recipient, numberOfDividendRecipients);
+//     this.signDividendTx(senderWallet);
+//   }
 
-  correct(recipient, numberOfDividendRecipients) {
-    this.input.balance = DIVIDEND * numberOfDividendRecipients;
-    delete this.outputs[recipient];
-    delete this.outputs['BLOCKCHAIN_BANK'];
-  }
+//   correct(recipient, numberOfDividendRecipients) {
+//     this.input.balance = DIVIDEND * numberOfDividendRecipients;
+//     delete this.outputs[recipient];
+//     delete this.outputs['BLOCKCHAIN_BANK'];
+//   }
 
-  update(senderwallet, recipient) {
-    this.outputs[recipient] = DIVIDEND;
-    this.signDividendTx(senderwallet);
-  }
+//   update(senderwallet, recipient) {
+//     this.outputs[recipient] = DIVIDEND;
+//     this.signDividendTx(senderwallet);
+//   }
 
-  signDividendTx(senderWallet) {
-    this.input.signature = senderWallet.sign(Transaction.txHash(this.outputs));
-  }
-}
+//   signDividendTx(senderWallet) {
+//     this.input.signature = senderWallet.sign(Transaction.txHash(this.outputs));
+//   }
+// }
 
-class RewardTx extends Transaction {
-  constructor(senderWallet, recipient) {
-    super(senderWallet, recipient, REWARD);
-    this.correct();
-    this.signRewardTX(senderWallet);
-  }
+// class RewardTx extends Transaction {
+//   constructor(senderWallet, recipient) {
+//     super(senderWallet, recipient, REWARD);
+//     this.correct();
+//     this.signRewardTX(senderWallet);
+//   }
 
-  correct() {
-    this.input.balance = REWARD;
-    delete this.outputs['BLOCKCHAIN_BANK'];
-  }
+//   correct() {
+//     this.input.balance = REWARD;
+//     delete this.outputs['BLOCKCHAIN_BANK'];
+//   }
 
-  signRewardTX(senderWallet) {
-    this.input.signature = senderWallet.sign(Transaction.txHash(this.outputs));
-  }
-}
+//   signRewardTX(senderWallet) {
+//     this.input.signature = senderWallet.sign(Transaction.txHash(this.outputs));
+//   }
+// }
 
 module.exports = Miner;

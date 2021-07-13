@@ -12,7 +12,6 @@ Project Description
 
 ### In Progress
 
-- [ ] Clean up code  
 
 ### Done ✓
 

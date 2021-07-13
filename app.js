@@ -5,7 +5,7 @@ const Blockchain = require('./blockchain');
 const P2pServer = require('./p2pserver');
 const Wallet = require('./wallet');
 const Mempool = require('./wallet/mempool');
-const Miner = require('./miner');
+const Miner = require('./miner/');
 const BlockExplorer = require('./blockchain/block-explorer');
 
 const connectDB = require('./config/db');
