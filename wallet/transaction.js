@@ -14,7 +14,7 @@ class Transaction {
       time: Date.now(),
       balance: senderWallet.calculateBalance(),
       address: senderWallet.address,
-      signature: 'Unsigned',
+      signature: 'Unsigned', //Tx is signed by the wallet when initiating a tx from a wallet
     };
   }
 

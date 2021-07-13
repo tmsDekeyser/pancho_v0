@@ -6,9 +6,13 @@ Project Description
 
 ### Todo
 
+- [ ] MVC pattern  
 - [ ] login/authentication  
-- [ ] Multiple Node wallets  
+- [ ] API docs  
+- [ ] Multiple groups  
+- [ ] Graph visualisation  
 - [ ] Block explorer  
+- [ ] Frontend  
 
 ### In Progress
 
@@ -22,4 +26,5 @@ Project Description
 - [x] address mapping  
 - [x] flow smart contract  
 - [x] bootstrapping  
+- [x] Multiple Node wallets  
 
