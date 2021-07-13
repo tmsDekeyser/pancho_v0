@@ -1,5 +1,5 @@
 const Websocket = require('ws');
-const { IP_HOST, IP_PEER } = require('./config/config');
+const { IP_BOOTSTRAP, IP_PEER } = require('./config/config');
 
 const P2P_PORT = process.env.P2P_PORT || 5001;
 //const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
@@ -17,62 +17,71 @@ class P2pServer {
     this.blockchain = blockchain;
     this.mempool = mempool;
     this.sockets = [];
-    this.peers = P2P_PORT === 5001 ? [] : [`ws://${IP_HOST}:5001`];
+    this.peers = P2P_PORT === 5001 ? [] : [`ws://${IP_BOOTSTRAP}:5001`];
   }
 
   listen() {
     const server = new Websocket.Server({ port: P2P_PORT });
-    // This onconnection event listener is when a client connects to us
+    // Initialise a websocket server
     server.on('connection', (socket, request) => {
       this.connectSocketAsServer(socket, request);
 
       socket.on('close', () => this.onCloseServerConnection(socket));
     });
-
-    if (this.peers[0] === `ws://${IP_HOST}:5001`) {
-      const socket = new Websocket(this.peers[0]);
-      //This onOpen envent listener is when we connect to the bootstrapping Server as the client
-      socket.on('open', () => this.connectSocketBootstrap(socket));
-
-      socket.on('close', () => {
-        //when exiting the bootstrap server, not when closing peer
-        console.log('Closing client connection to bootstrap' + socket._url);
-        this.peers = this.peers.filter((p) => p !== `ws://${IP_HOST}:5001`);
-        this.sockets = this.sockets.filter((s) => s !== socket);
-        console.log(this.sockets.length);
-      });
-    }
-
     console.log(`Listening for peer connections on port ${P2P_PORT}`);
+
+    //Connect to the Bootstrapping server
+    this.connectToBootstrap();
   }
+
+  //Connecting sockets
 
   connectSocketAsServer(socket, request) {
     let ip = request.socket.remoteAddress;
     if (ip.substr(0, 7) === '::ffff:') {
       ip = ip.substr(7);
     }
-    //necessary?
+    //We store an additional key:value on the socket object
+    //It will later store the websocket server port for peers connecting to the network
     socket.remotePeerServer = {
       address: ip,
-      port: 0,
+      remotePort: request.socket.remotePort,
+      wsServerPort: 0,
     };
 
     this.connectSocket(socket);
   }
 
-  connectSocketBootstrap(socket) {
-    this.connectSocket(socket);
-    this.sendAddress(socket);
+  connectToBootstrap() {
+    if (this.peers[0] === `ws://${IP_BOOTSTRAP}:5001`) {
+      const socket = new Websocket(this.peers[0]);
+      //This onOpen envent listener is when we connect to the bootstrapping Server as the client
+      socket.on('open', () => {
+        this.connectSocket(socket);
+        this.sendAddress(socket);
+      });
+
+      socket.on('close', () => {
+        //when bootstrap server goes down
+        console.log('Closing client connection to bootstrap: ' + socket._url);
+        console.log('Bootstrap server down, follow status and re-connect'.red);
+        this.onClosePeerSocket(socket, `ws://${IP_BOOTSTRAP}:5001`);
+      });
+    }
   }
 
   connectToPeers(peers) {
     peers.forEach((peer) => {
       const socket = new Websocket(peer);
-      socket.on('open', () => this.connectSocket(socket));
+
+      socket.on('open', () => {
+        this.connectSocket(socket);
+        this.sendAddress(socket);
+      });
+
       socket.on('close', () => {
-        console.log('closing peer connection');
-        this.peers = this.peers.filter((p) => p !== peer);
-        this.sockets = this.sockets.filter((s) => s !== socket);
+        console.log('closing peer connection: ' + peer);
+        this.onClosePeerSocket(socket, peer);
       });
     });
   }
@@ -81,25 +90,32 @@ class P2pServer {
     if (!this.sockets.find((s) => s === socket)) {
       this.sockets.push(socket);
       console.log('Socket connected');
+      this.messageHandler(socket);
+
+      this.sendChain(socket);
     }
-
-    this.messageHandler(socket);
-
-    this.sendChain(socket);
   }
+
+  //Close sockets helpers
 
   onCloseServerConnection(socket) {
     const peerToRemove = `ws://${
       this.sockets[this.sockets.indexOf(socket)].remotePeerServer.address
-    }:${this.sockets[this.sockets.indexOf(socket)].remotePeerServer.port}`;
+    }:${
+      this.sockets[this.sockets.indexOf(socket)].remotePeerServer.wsServerPort
+    }`;
 
-    console.log('Before', this.peers, this.sockets.length);
+    this.onClosePeerSocket(socket, peerToRemove);
 
-    this.peers = this.peers.filter((peer) => peer !== peerToRemove);
-    this.sockets = this.sockets.filter((s) => s !== socket);
-
-    console.log('after', this.peers, this.sockets.length);
+    console.log('Closing client peer connection: ' + peerToRemove);
   }
+
+  onClosePeerSocket(socket, peer) {
+    this.peers = this.peers.filter((p) => p !== peer);
+    this.sockets = this.sockets.filter((s) => s !== socket);
+  }
+
+  //Message handler
 
   messageHandler(socket) {
     socket.on('message', (message) => {
@@ -116,7 +132,7 @@ class P2pServer {
           this.mempool.clearMempool();
           break;
         case MESSAGE_TYPES.address:
-          socket.remotePeerServer.port = data.port;
+          socket.remotePeerServer.wsServerPort = data.port;
           const fullIp = `ws://${data.address}:${data.port}`;
           if (!this.peers.find((peer) => peer === fullIp)) {
             this.peers.push(fullIp);
@@ -139,7 +155,9 @@ class P2pServer {
     });
   }
 
-  //syncChains still necessary?
+  //Sending messages
+
+  //syncChains still necessary? Not really, due to broadcastChain method
   syncChains() {
     this.sockets.forEach((socket) => {
       this.sendChain(socket);
@@ -157,7 +175,11 @@ class P2pServer {
 
   sendAddress(socket) {
     console.log('sending address');
-    const ip = P2pServer.socketIp(socket);
+    let ip = socket._socket.address().address;
+    if (ip.substr(0, 7) === '::ffff:') {
+      ip = ip.substr(7);
+    }
+
     socket.send(
       JSON.stringify({
         type: MESSAGE_TYPES.address,
@@ -202,15 +224,6 @@ class P2pServer {
         })
       )
     );
-  }
-
-  static socketIp(socket) {
-    console.log(JSON.stringify(socket._socket.address()));
-    let ip = socket._socket.address().address;
-    if (ip.substr(0, 7) === '::ffff:') {
-      ip = ip.substr(7);
-    }
-    return ip;
   }
 }
 
