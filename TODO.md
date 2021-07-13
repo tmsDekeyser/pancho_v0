@@ -8,11 +8,10 @@ Project Description
 
 - [ ] login/authentication  
 - [ ] Multiple Node wallets  
+- [ ] Block explorer  
 
 ### In Progress
 
-- [ ] bootstrapping  
-- [ ] Block explorer  
 
 ### Done ✓
 
@@ -22,4 +21,5 @@ Project Description
 - [x] Validation  
 - [x] address mapping  
 - [x] flow smart contract  
+- [x] bootstrapping  
 

@@ -1,7 +1,5 @@
 const express = require('express');
 const colors = require('colors');
-//const morgan = require('morgan');
-//const helmet = require('helmet');
 
 const Blockchain = require('./blockchain');
 const P2pServer = require('./p2pserver');
@@ -15,7 +13,6 @@ const connectDB = require('./config/db');
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-//app.use(morgan, helmet);
 
 connectDB();
 

@@ -21,41 +21,84 @@ class P2pServer {
   }
 
   listen() {
-    console.log(this.peers);
     const server = new Websocket.Server({ port: P2P_PORT });
-    server.on('connection', (socket) => this.connectSocket(socket));
+    // This onconnection event listener is when a client connects to us
+    server.on('connection', (socket, request) => {
+      this.connectSocketAsServer(socket, request);
+
+      socket.on('close', () => this.onCloseServerConnection(socket));
+    });
 
     if (this.peers[0] === `ws://${IP_HOST}:5001`) {
       const socket = new Websocket(this.peers[0]);
+      //This onOpen envent listener is when we connect to the bootstrapping Server as the client
       socket.on('open', () => this.connectSocketBootstrap(socket));
+
+      socket.on('close', () => {
+        //when exiting the bootstrap server, not when closing peer
+        console.log('Closing client connection to bootstrap' + socket._url);
+        this.peers = this.peers.filter((p) => p !== `ws://${IP_HOST}:5001`);
+        this.sockets = this.sockets.filter((s) => s !== socket);
+        console.log(this.sockets.length);
+      });
     }
 
     console.log(`Listening for peer connections on port ${P2P_PORT}`);
   }
 
+  connectSocketAsServer(socket, request) {
+    let ip = request.socket.remoteAddress;
+    if (ip.substr(0, 7) === '::ffff:') {
+      ip = ip.substr(7);
+    }
+    //necessary?
+    socket.remotePeerServer = {
+      address: ip,
+      port: 0,
+    };
+
+    this.connectSocket(socket);
+  }
+
+  connectSocketBootstrap(socket) {
+    this.connectSocket(socket);
+    this.sendAddress(socket);
+  }
+
   connectToPeers(peers) {
     peers.forEach((peer) => {
-      try {
-        const socket = new Websocket(peer);
-        socket.on('open', () => this.connectSocket(socket));
-      } catch (error) {
-        console.log('error', error);
-      }
+      const socket = new Websocket(peer);
+      socket.on('open', () => this.connectSocket(socket));
+      socket.on('close', () => {
+        console.log('closing peer connection');
+        this.peers = this.peers.filter((p) => p !== peer);
+        this.sockets = this.sockets.filter((s) => s !== socket);
+      });
     });
   }
 
   connectSocket(socket) {
-    this.sockets.push(socket);
-    console.log('Socket connected');
+    if (!this.sockets.find((s) => s === socket)) {
+      this.sockets.push(socket);
+      console.log('Socket connected');
+    }
 
     this.messageHandler(socket);
 
     this.sendChain(socket);
   }
 
-  connectSocketBootstrap(socket) {
-    this.connectSocket(socket);
-    this.sendAddress(socket);
+  onCloseServerConnection(socket) {
+    const peerToRemove = `ws://${
+      this.sockets[this.sockets.indexOf(socket)].remotePeerServer.address
+    }:${this.sockets[this.sockets.indexOf(socket)].remotePeerServer.port}`;
+
+    console.log('Before', this.peers, this.sockets.length);
+
+    this.peers = this.peers.filter((peer) => peer !== peerToRemove);
+    this.sockets = this.sockets.filter((s) => s !== socket);
+
+    console.log('after', this.peers, this.sockets.length);
   }
 
   messageHandler(socket) {
@@ -73,25 +116,29 @@ class P2pServer {
           this.mempool.clearMempool();
           break;
         case MESSAGE_TYPES.address:
-          if (!this.peers.find((peer) => peer === data.address)) {
-            this.peers.push(data.address);
+          socket.remotePeerServer.port = data.port;
+          const fullIp = `ws://${data.address}:${data.port}`;
+          if (!this.peers.find((peer) => peer === fullIp)) {
+            this.peers.push(fullIp);
           }
           this.sockets.forEach((socket) => this.sendPeers(socket, this.peers));
           break;
         case MESSAGE_TYPES.peers:
-          data.peers.forEach((peer) => {
-            if (
+          const newPeers = data.peers.filter((peer) => {
+            return (
               !this.peers.find((knownPeer) => knownPeer === peer) &&
               peer !== `ws://${IP_PEER}:${P2P_PORT}`
-            ) {
-              this.peers.push(peer);
-            }
+            );
           });
-          this.connectToPeers(data.peers);
+
+          newPeers.forEach((peer) => this.peers.push(peer));
+
+          this.connectToPeers(newPeers);
           break;
       }
     });
   }
+
   //syncChains still necessary?
   syncChains() {
     this.sockets.forEach((socket) => {
@@ -114,7 +161,8 @@ class P2pServer {
     socket.send(
       JSON.stringify({
         type: MESSAGE_TYPES.address,
-        address: `ws://${ip}:${P2P_PORT}`,
+        address: ip,
+        port: P2P_PORT,
       })
     );
   }
