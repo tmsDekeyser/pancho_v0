@@ -2,7 +2,6 @@ const Websocket = require('ws');
 const { IP_BOOTSTRAP, IP_PEER } = require('./config/config');
 
 const P2P_PORT = process.env.P2P_PORT || 5001;
-//const peers = process.env.PEERS ? process.env.PEERS.split(',') : [];
 
 const MESSAGE_TYPES = {
   chain: 'CHAIN',

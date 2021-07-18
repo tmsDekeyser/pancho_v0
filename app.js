@@ -9,14 +9,14 @@ const Miner = require('./miner/');
 const BlockExplorer = require('./blockchain/block-explorer');
 
 //MongoDB database to store user profiles (and keys in the demo, encrypted)
-const connectDB = require('./config/db');
+//const connectDB = require('./config/db');
 
 //Express.js
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-connectDB();
+//connectDB();
 
 const HTTP_PORT = process.env.HTTP_PORT || 3001;
 const bc = new Blockchain();
@@ -80,10 +80,6 @@ app.get('/mempool', (req, res) => {
   res.json(mempool.transactions);
 });
 
-app.get('/valid-transactions', (req, res) => {
-  res.json(miner.validTransactions());
-});
-
 app.get('/known-addresses', (req, res) => {
   res.json(bc.knownAddresses());
 });
@@ -94,6 +90,13 @@ app.get('/wallet-map', (req, res) => {
 
 app.get('/contacts', (req, res) => {
   res.json(wallet.addressBook);
+});
+
+app.get('/contacts/:id', (req, res) => {
+  const userID = req.params.id;
+  const userWallet = walletMap[userID];
+
+  res.json(userWallet.addressBook);
 });
 
 app.get('/peers', (req, res) => {
@@ -136,6 +139,16 @@ app.post('/contacts', (req, res) => {
   wallet.addressBook[alias] = address;
 
   res.redirect('/contacts');
+});
+
+app.post('/contacts/:id', (req, res) => {
+  const { address, alias } = req.body;
+  const userID = req.params.id;
+  const userWallet = walletMap[userID];
+
+  userWallet.addressBook[alias] = address;
+
+  res.redirect(`/contacts/${userID}`);
 });
 
 //listening to servers

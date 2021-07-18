@@ -3,8 +3,6 @@ const Wallet = require('../wallet');
 const DividendTx = require('./dividend-transaction');
 const RewardTx = require('./reward-transaction');
 
-const CryptoUtil = require('../util/cryptoUtil');
-
 class Miner {
   constructor({ blockchain, wallet, mempool, p2pServer }) {
     this.blockchain = blockchain;
