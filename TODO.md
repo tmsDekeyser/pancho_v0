@@ -8,7 +8,6 @@ Project Description
 
 - [ ] MVC pattern  
 - [ ] login/authentication  
-- [ ] API docs  
 - [ ] Multiple groups  
 - [ ] Graph visualisation  
 - [ ] Block explorer  
@@ -16,6 +15,7 @@ Project Description
 
 ### In Progress
 
+- [ ] API docs  
 
 ### Done ✓
 
