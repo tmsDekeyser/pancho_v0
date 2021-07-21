@@ -14,8 +14,8 @@ const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-app.use('/api/v0/wallet/', walletRoutes);
-app.use('/api/v0/p2p/', p2pRoutes);
+app.use('/api/v0/wallet', walletRoutes);
+app.use('/api/v0/p2p', p2pRoutes);
 
 connectDB();
 
