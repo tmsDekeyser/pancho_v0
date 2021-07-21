@@ -4,8 +4,9 @@
   "description": "A simple version of the pancho learning validation system",
   "main": "app.js",
   "scripts": {
-    "server": "nodemon app.js",
-    "peer": "HTTP_PORT=3002 P2P_PORT=5002 PEERS=ws://localhost:5001 nodemon app.js"
+    "server": "node app.js",
+    "peer": "HTTP_PORT=3002 P2P_PORT=5002 node app.js",
+    "peer2": "HTTP_PORT=3003 P2P_PORT=5003 node app.js"
   },
   "repository": {
     "type": "git",
@@ -22,9 +23,7 @@
     "config": "^3.3.6",
     "elliptic": "^6.5.4",
     "express": "^4.17.1",
-    "helmet": "^4.6.0",
     "mongoose": "^5.13.2",
-    "morgan": "^1.10.0",
     "uuid": "^8.3.2",
     "ws": "^7.4.6"
   }
