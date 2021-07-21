@@ -5,9 +5,12 @@ const { p2pServer } = require('./local-copy');
 //MongoDB database to store user profiles (and keys in the demo, encrypted)
 const connectDB = require('./config/db');
 
+connectDB();
+
 //Route files
 const walletRoutes = require('./routes/wallet');
 const p2pRoutes = require('./routes/p2p');
+const authRoutes = require('./routes/auth');
 
 //Express.js
 const app = express();
@@ -16,8 +19,7 @@ app.use(express.json());
 
 app.use('/api/v0/wallet', walletRoutes);
 app.use('/api/v0/p2p', p2pRoutes);
-
-connectDB();
+app.use('/api/v0/auth', authRoutes);
 
 const HTTP_PORT = process.env.HTTP_PORT || 3001;
 
