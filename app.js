@@ -76,12 +76,15 @@ app.get('/wallet-info/:id', (req, res) => {
   res.json(walletInfoHelper(userWallet));
 });
 
-app.get('/mempool', (req, res) => {
-  res.json(mempool.transactions);
+app.get('/wallet-info/:id', (req, res) => {
+  const userID = req.params.id;
+  const userWallet = walletMap[userID];
+
+  res.json(walletInfoHelper(userWallet));
 });
 
-app.get('/valid-transactions', (req, res) => {
-  res.json(miner.validTransactions());
+app.get('/mempool', (req, res) => {
+  res.json(mempool.transactions);
 });
 
 app.get('/known-addresses', (req, res) => {
@@ -94,6 +97,13 @@ app.get('/wallet-map', (req, res) => {
 
 app.get('/contacts', (req, res) => {
   res.json(wallet.addressBook);
+});
+
+app.get('/contacts/:id', (req, res) => {
+  const userID = req.params.id;
+  const userWallet = walletMap[userID];
+
+  res.json(userWallet.addressBook);
 });
 
 app.get('/peers', (req, res) => {
@@ -136,6 +146,16 @@ app.post('/contacts', (req, res) => {
   wallet.addressBook[alias] = address;
 
   res.redirect('/contacts');
+});
+
+app.post('/contacts/:id', (req, res) => {
+  const { address, alias } = req.body;
+  const userID = req.params.id;
+  const userWallet = walletMap[userID];
+
+  userWallet.addressBook[alias] = address;
+
+  res.redirect(`/contacts/${userID}`);
 });
 
 //listening to servers

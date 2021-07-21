@@ -48,6 +48,7 @@ class Wallet {
         tx = new Transaction(this, recipient, amount);
       }
     }
+    //Sign transaction
     tx.input.signature = this.sign(Transaction.txHash(tx.outputs));
     return tx;
   }
@@ -107,6 +108,7 @@ class Wallet {
     return balance;
   }
 
+  //Generates a (bank)wallet that hands out the mining rewards and dividend
   static bankWallet(blockchain) {
     const bankWallet = new this({ priv: null, pub: null }, blockchain);
     bankWallet.address = 'BLOCKCHAIN_BANK';

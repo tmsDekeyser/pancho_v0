@@ -18,6 +18,7 @@ class Blockchain {
 
   addBlock(newBlock) {
     //TODO: add block validation
+    //Redundant due to replaceChain() function
     this.chain.push(newBlock);
     return this.chain;
   }
@@ -91,6 +92,8 @@ class Blockchain {
   }
 
   knownAddresses() {
+    //Runs through the blockchain and stores all addresses
+    //Necessary to hand out dividends to al users
     const knownAddresses = {};
     if (this.chain.length < 2) {
       return knownAddresses;
