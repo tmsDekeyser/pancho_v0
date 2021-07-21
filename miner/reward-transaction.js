@@ -13,6 +13,8 @@ class RewardTx extends Transaction {
     delete this.outputs['BLOCKCHAIN_BANK'];
   }
 
+  //No corrected update function is necessary as there is only one Reward Tx per block
+
   signRewardTX(senderWallet) {
     this.input.signature = senderWallet.sign(Transaction.txHash(this.outputs));
   }
