@@ -1,5 +1,7 @@
 const express = require('express');
 const colors = require('colors');
+const cookieParser = require('cookie-parser');
+const errorHandler = require('./middleware/error');
 
 const { p2pServer } = require('./local-copy');
 //MongoDB database to store user profiles (and keys in the demo, encrypted)
@@ -16,10 +18,13 @@ const authRoutes = require('./routes/auth');
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser);
 
 app.use('/api/v0/wallet', walletRoutes);
 app.use('/api/v0/p2p', p2pRoutes);
 app.use('/api/v0/auth', authRoutes);
+
+app.use(errorHandler);
 
 const HTTP_PORT = process.env.HTTP_PORT || 3001;
 
