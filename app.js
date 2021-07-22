@@ -18,19 +18,19 @@ const authRoutes = require('./routes/auth');
 const app = express();
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(cookieParser);
+app.use(cookieParser());
 
 app.use('/api/v0/wallet', walletRoutes);
 app.use('/api/v0/p2p', p2pRoutes);
 app.use('/api/v0/auth', authRoutes);
-
-app.use(errorHandler);
 
 const HTTP_PORT = process.env.HTTP_PORT || 3001;
 
 app.get('/', (req, res) => {
   res.send('Welcome to the blockchain demo');
 });
+
+app.use(errorHandler);
 
 //listening to servers
 

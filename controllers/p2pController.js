@@ -24,10 +24,12 @@ const userWalletHelper = (req) => {
   const userID = req.params.id;
   return walletMap[userID];
 };
+
 //@description    Show Blockchain
 //@Route          GET api/v0/p2p/blocks
 //@Visibiity      Public
 exports.getBlocks = (req, res, next) => {
+  console.log(req);
   res.json(bc.chain);
 };
 
@@ -47,14 +49,14 @@ exports.getKnownAddresses = (req, res, next) => {
 
 //@description    Show Connected peers
 //@Route          GET api/v0/p2p/peers
-//@Visibiity      Private/public?
+//@Visibiity      Private + role === peer || admin
 exports.getPeers = (req, res, next) => {
   res.json(p2pServer.peers);
 };
 
 //@description    Mine a block
 //@Route          POST api/v0/p2p/mine
-//@Visibiity      Private
+//@Visibiity      Private + role === admin
 exports.mineBlock = (req, res, next) => {
   miner.mine();
   res.redirect('/blocks');
@@ -62,7 +64,7 @@ exports.mineBlock = (req, res, next) => {
 
 //@description    Transact as main node
 //@Route          GET api/v0/p2p/transact
-//@Visibiity      Private
+//@Visibiity      Private + role === peer \\ admin
 exports.postTransactionMain = (req, res, next) => {
   transactHelper(wallet, req);
   res.redirect('mempool');
@@ -70,7 +72,7 @@ exports.postTransactionMain = (req, res, next) => {
 
 //@description    Transact as client
 //@Route          GET api/v0/p2p/transact/:id
-//@Visibiity      Public
+//@Visibiity      Private
 exports.postTransactionById = (req, res, next) => {
   transactHelper(userWalletHelper(req), req);
   res.redirect('http://localhost:3001/api/v0/p2p/mempool');

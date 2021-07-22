@@ -34,12 +34,16 @@ exports.login = asyncHandler(async (req, res, next) => {
   //Check for user
   const user = await User.findOne({ email: email }).select('+password');
 
-  if (!user) return 'Invalid credentials';
+  if (!user) {
+    return next(new ErrorResponse('Invalid credentials', 401));
+  }
 
   //Check if password is correct
   const isMatch = await user.matchPassword(password);
 
-  if (!isMatch) return 'Invalid Credentials';
+  if (!isMatch) {
+    return next(new ErrorResponse('Invalid credentials', 401));
+  }
 
   sendTokenResponse(user, 200, res);
 });
@@ -57,9 +61,15 @@ const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
 
   const options = {
-    expires: Date.now() + config.get('JWT_COOKIE_EXPIRE') * 24 * 60 * 60 * 1000,
+    expires: new Date(
+      Date.now() + config.get('JWT_COOKIE_EXPIRE') * 24 * 60 * 60 * 1000
+    ),
     httpOnly: true,
   };
+
+  if (config.get('environment') === 'production') {
+    options.secure = true;
+  }
 
   res
     .status(statusCode)
