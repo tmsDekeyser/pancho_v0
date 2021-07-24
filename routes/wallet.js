@@ -1,40 +1,26 @@
+//Checked after adding authentication
 const express = require('express');
 const router = express.Router();
 const {
   getWalletInfoMain,
-  getWalletInfoById,
-  getWalletMap,
+  getWalletInfoByAddress,
   getContactsMain,
   postContactsMain,
-  getContactsById,
-  postContactsById,
-  postRegister,
 } = require('../controllers/walletController');
 
-const { protect, authorize } = require('../middleware/auth');
+const { protect } = require('../middleware/auth');
 
 //Routes
 
 //Add error handler for all the :id methods
 
-router.route('/wallet-info').get(getWalletInfoMain);
+router.route('/wallet-info').get(protect, getWalletInfoMain);
 
-router.route('/wallet-info/:id').get(getWalletInfoById);
-
-router
-  .route('/wallet-map')
-  .get(protect, authorize('peer', 'admin'), getWalletMap);
+router.route('/wallet-info/:address').get(getWalletInfoByAddress);
 
 router
   .route('/contacts')
-  .get(protect, authorize('peer', 'admin'), getContactsMain)
-  .post(protect, authorize('peer', 'admin'), postContactsMain);
-
-router
-  .route('/contacts/:id')
-  .get(protect, getContactsById)
-  .post(protect, postContactsById);
-
-router.route('/register/:id').post(postRegister);
+  .get(protect, getContactsMain)
+  .post(protect, postContactsMain);
 
 module.exports = router;

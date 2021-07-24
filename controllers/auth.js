@@ -1,6 +1,8 @@
 const ErrorResponse = require('../util/errorResponse');
 const asyncHandler = require('../middleware/async');
 const User = require('../models/User');
+const Wallet = require('../wallet/index');
+const { bc } = require('../local-copy');
 const config = require('config');
 
 // @desc    Register a user
@@ -8,6 +10,8 @@ const config = require('config');
 // @access  Public
 exports.register = asyncHandler(async (req, res, next) => {
   const { username, email, password, role } = req.body;
+  const wallet = new Wallet({ priv: null, pub: null }, bc);
+  const keys = [wallet.keyPair.getPrivate('hex'), wallet.address];
 
   //create user
   const user = await User.create({
@@ -15,6 +19,7 @@ exports.register = asyncHandler(async (req, res, next) => {
     email,
     role,
     password,
+    keys,
   });
 
   sendTokenResponse(user, 200, res);
@@ -52,7 +57,7 @@ exports.login = asyncHandler(async (req, res, next) => {
 // @route   POST api/v0/auth/me
 // @access  Private
 exports.getMe = asyncHandler(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user._id);
   res.status(200).json({ success: true, data: user });
 });
 

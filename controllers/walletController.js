@@ -1,90 +1,57 @@
-const { bc, wallet, mempool, p2pServer, walletMap } = require('../local-copy');
+//Checked after adding authentication
+const { bc } = require('../local-copy');
+const asyncHandler = require('../middleware/async');
 
-const Wallet = require('../wallet/');
 const BlockExplorer = require('../blockchain/block-explorer');
+const User = require('../models/User');
 
 //helper functions
 
-const walletInfoHelper = (wall) => {
+const walletInfoHelper = (address) => {
   return {
-    address: wall.address,
-    balance: wall.calculateBalance(),
-    flow: BlockExplorer.calculateFlow(bc, wall.address),
+    address: address,
+    balance: BlockExplorer.calculateBalance(bc, address),
+    flow: BlockExplorer.calculateFlow(bc, address),
   };
-};
-
-const userWalletHelper = (req) => {
-  const userID = req.params.id;
-  return walletMap[userID];
 };
 
 //@description    Show Wallet-info main node
 //@Route          GET api/v0/wallet/wallet-info
-//@Visibiity      Public
+//@Visibiity      Private
 exports.getWalletInfoMain = (req, res, next) => {
-  res.json(walletInfoHelper(wallet));
+  res.json(walletInfoHelper(req.user.keys[1]));
 };
 
 //@description    Show wallet info client
-//@Route          GET api/v0/wallet/wallet-info/:id
+//@Route          GET api/v0/wallet/wallet-info/:address
 //@Visibiity      Public
-exports.getWalletInfoById = (req, res, next) => {
-  res.json(walletInfoHelper(userWalletHelper(req)));
-};
-
-//@description    Show all registered users
-//@Route          GET api/v0/wallet/wallet-map
-//@Visibiity      Private
-exports.getWalletMap = (req, res, next) => {
-  res.json(walletMap);
+exports.getWalletInfoByAddress = (req, res, next) => {
+  res.json(walletInfoHelper(req.params.address));
 };
 
 //@description    Show contacts as main node
 //@Route          GET api/v0/wallet/contacts
 //@Visibiity      Private
 exports.getContactsMain = (req, res, next) => {
-  res.json(wallet.addressBook);
+  res.json(JSON.parse(req.user.addressBook));
 };
 
 //@description    Save contacts as main node
 //@Route          POST api/v0/wallet/contacts
 //@Visibiity      Private
-exports.postContactsMain = (req, res, next) => {
+exports.postContactsMain = asyncHandler(async (req, res, next) => {
   const { address, alias } = req.body;
-
-  wallet.addressBook[alias] = address;
-
-  res.redirect('contacts');
-};
-
-//@description    Show contacts as client
-//@Route          GET api/v0/wallet/contacts/:id
-//@Visibiity      Private
-exports.getContactsById = (req, res, next) => {
-  //add error when user ID does not exist
-  res.json(userWalletHelper(req) ? userWalletHelper(req).addressBook : {});
-};
-
-//@description    Save alias as client
-//@Route          POST api/v0/wallet/contacts/:id
-//@Visibiity      Private
-exports.postContactsById = (req, res, next) => {
-  const { address, alias } = req.body;
-  if (userWalletHelper(req)) {
-    userWalletHelper(req).addressBook[alias] = address;
+  if (!JSON.parse(req.user.addressBook)) {
+    const addressBook = {};
+  } else {
+    addressBook = JSON.parse(req.user.addressBook);
   }
 
-  res.redirect(`${req.params.id}`);
-};
+  addressBook[alias] = address;
 
-//@description    Register a user
-//@Route          POST api/v0/wallet/register/:id
-//@Visibiity      Public
-exports.postRegister = (req, res, next) => {
-  const userID = req.params.id;
-  //add option to load keys
-  const userWallet = new Wallet({ priv: null }, bc);
-  walletMap[userID] = userWallet;
+  const user = await User.findByIdAndUpdate(req.user._id, {
+    addressBook: JSON.stringify(addressBook),
+  });
 
-  res.json(walletMap);
-};
+  res.redirect('contacts');
+});

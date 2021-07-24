@@ -6,8 +6,6 @@ Project Description
 
 ### Todo
 
-- [ ] MVC pattern  
-- [ ] login/authentication  
 - [ ] Multiple groups  
 - [ ] Graph visualisation  
 - [ ] Block explorer  
@@ -15,10 +13,12 @@ Project Description
 
 ### In Progress
 
-- [ ] API docs  
 
 ### Done ✓
 
+- [x] login/authentication  
+- [x] MVC pattern  
+- [x] API docs  
 - [x] Miner + dividend  
 - [x] Broadcast Tx  
 - [x] Calculate Balance  

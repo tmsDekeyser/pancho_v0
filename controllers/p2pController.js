@@ -1,11 +1,7 @@
-const {
-  bc,
-  wallet,
-  mempool,
-  p2pServer,
-  miner,
-  walletMap,
-} = require('../local-copy');
+//Checked after adding authentication
+const { bc, wallet, mempool, p2pServer, miner } = require('../local-copy');
+const Wallet = require('../wallet/index');
+const asyncHandler = require('../middleware/async');
 
 const transactHelper = (wall, req) => {
   const { amount } = req.body;
@@ -18,11 +14,6 @@ const transactHelper = (wall, req) => {
     mempool.addOrUpdateTransaction(tx);
     p2pServer.broadcastTransaction(tx);
   }
-};
-
-const userWalletHelper = (req) => {
-  const userID = req.params.id;
-  return walletMap[userID];
 };
 
 //@description    Show Blockchain
@@ -59,21 +50,21 @@ exports.getPeers = (req, res, next) => {
 //@Visibiity      Private + role === admin
 exports.mineBlock = (req, res, next) => {
   miner.mine();
-  res.redirect('/blocks');
+  res.redirect('blocks');
 };
 
 //@description    Transact as main node
-//@Route          GET api/v0/p2p/transact
-//@Visibiity      Private + role === peer \\ admin
-exports.postTransactionMain = (req, res, next) => {
-  transactHelper(wallet, req);
-  res.redirect('mempool');
-};
-
-//@description    Transact as client
-//@Route          GET api/v0/p2p/transact/:id
+//@Route          POST api/v0/p2p/transact
 //@Visibiity      Private
-exports.postTransactionById = (req, res, next) => {
-  transactHelper(userWalletHelper(req), req);
-  res.redirect('http://localhost:3001/api/v0/p2p/mempool');
-};
+exports.postTransactionMain = asyncHandler(async (req, res, next) => {
+  const priv = req.user.keys[0];
+  const pub = req.user.keys[1];
+
+  try {
+    const userWallet = new Wallet({ priv, pub }, bc);
+    transactHelper(userWallet, req);
+    res.redirect('mempool');
+  } catch (error) {
+    next(error);
+  }
+});

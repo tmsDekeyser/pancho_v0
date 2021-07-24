@@ -26,6 +26,11 @@ const UserSchema = new mongoose.Schema({
     type: [String],
     required: false,
   },
+  addressBook: {
+    type: String,
+    required: false,
+    default: '{}',
+  },
   password: {
     type: String,
     required: [true, 'Please add a password'],
