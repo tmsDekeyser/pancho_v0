@@ -6,13 +6,16 @@ Project Description
 
 ### Todo
 
-- [ ] Multiple groups  
-- [ ] Graph visualisation  
+- [ ] Logout  
+- [ ] Add badges  
 - [ ] Block explorer  
-- [ ] Frontend  
+- [ ] Docgen  
+- [ ] Graph visualisation  
+- [ ] Multiple groups  
 
 ### In Progress
 
+- [ ] Frontend  
 
 ### Done ✓
 

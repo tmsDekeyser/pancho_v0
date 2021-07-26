@@ -20,7 +20,6 @@ const transactHelper = (wall, req) => {
 //@Route          GET api/v0/p2p/blocks
 //@Visibiity      Public
 exports.getBlocks = (req, res, next) => {
-  console.log(req);
   res.json(bc.chain);
 };
 
