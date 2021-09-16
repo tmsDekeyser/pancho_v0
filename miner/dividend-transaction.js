@@ -12,6 +12,7 @@ class DividendTx extends Transaction {
     //Input = DIVIDEND $ numberOfRecipients, so that input = output amounts
     //This way the tx verification passes
     this.input.balance = DIVIDEND * numberOfDividendRecipients;
+    this.input.type = 'DIVIDEND';
     delete this.outputs[recipient];
     delete this.outputs['BLOCKCHAIN_BANK'];
   }

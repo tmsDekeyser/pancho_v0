@@ -12,6 +12,7 @@ class Transaction {
   createInput(senderWallet) {
     return {
       time: Date.now(),
+      type: 'REGULAR',
       balance: senderWallet.calculateBalance(),
       address: senderWallet.address,
       signature: 'Unsigned', //Tx is signed by the wallet when initiating a tx from a wallet
@@ -46,6 +47,7 @@ class Transaction {
     }, 0);
 
     const validAmounts = outputTotals === tx.input.balance;
+
     //& signature is valid
     const signatureValid = CryptoUtil.verifySignature({
       publicKeyString: tx.input.address,

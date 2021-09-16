@@ -1,6 +1,7 @@
 const CryptoUtil = require('../util/cryptoUtil');
 
 const Transaction = require('./transaction');
+const Nomination = require('./nomiation');
 const BlockExplorer = require('../blockchain/block-explorer');
 
 class Wallet {
@@ -52,8 +53,26 @@ class Wallet {
     return tx;
   }
 
+  nominate(badgeAddress, badgeRecipient, amount) {
+    // How do we check the balance and how much do we allow to spend?
+    const nomination = new Nomination(
+      this,
+      badgeAddress,
+      badgeRecipient,
+      amount
+    );
+
+    nomination.signature = this.sign(Nomination.nomHash(nomination.data));
+
+    return nomination;
+  }
+
   calculateBalance() {
     return BlockExplorer.calculateBalance(this.blockchain, this.address);
+  }
+
+  calculateFlow() {
+    return BlockExplorer.calculateFlow(this.blockchain, this.address);
   }
 
   //Generates a (bank)wallet that hands out the mining rewards and dividend

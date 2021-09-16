@@ -75,6 +75,7 @@ class BlockExplorer {
   }
 
   static calculateFlow(blockchain, address) {
+    //TODO: update for badges functionality
     const txList = this.userTransactions(blockchain, address);
 
     return txList.reduce((totalFlow, tx) => {

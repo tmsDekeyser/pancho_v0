@@ -1,6 +1,8 @@
 class Mempool {
   constructor() {
     this.transactions = []; //could be a map (object) for lookup optimization
+    this.nominations = [];
+    this.badgeTransactions = [];
   }
 
   addOrUpdateTransaction(tx) {
@@ -40,6 +42,10 @@ class Mempool {
 
       return bool;
     });
+  }
+
+  addNomination(nom) {
+    this.nominations.push(nom);
   }
 }
 

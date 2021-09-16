@@ -4,11 +4,24 @@ const Wallet = require('../wallet/index');
 const asyncHandler = require('../middleware/async');
 
 const transactHelper = (wall, req) => {
-  const { amount } = req.body;
+  const { amount, options } = req.body;
   let { recipient } = req.body;
   recipient = wall.addressBook[recipient] || recipient;
 
-  const tx = wall.createTransaction(recipient, amount, mempool);
+  const tx = wall.createTransaction(recipient, amount, options, mempool);
+
+  if (tx) {
+    mempool.addOrUpdateTransaction(tx);
+    p2pServer.broadcastTransaction(tx);
+  }
+};
+
+const nominateHelper = (wall, req) => {
+  const { amount, options } = req.body;
+  let { recipient } = req.body;
+  recipient = wall.addressBook[recipient] || recipient;
+
+  const tx = wall.createTransaction(recipient, amount, options, mempool);
 
   if (tx) {
     mempool.addOrUpdateTransaction(tx);
@@ -27,7 +40,7 @@ exports.getBlocks = (req, res, next) => {
 //@Route          GET api/v0/p2p/mempool
 //@Visibiity      Public
 exports.getMempool = (req, res, next) => {
-  res.json(mempool.transactions);
+  res.json(mempool);
 };
 
 //@description    Show Known addresses on blockchain
@@ -62,6 +75,30 @@ exports.postTransactionMain = asyncHandler(async (req, res, next) => {
   try {
     const userWallet = new Wallet({ priv, pub }, bc);
     transactHelper(userWallet, req);
+    res.redirect('mempool');
+  } catch (error) {
+    next(error);
+  }
+});
+
+//@description    Nominate user for badge
+//@Route          POST api/v0/p2p/nominate
+//@Visibiity      Private
+exports.nominateMain = asyncHandler(async (req, res, next) => {
+  const priv = req.user.keys[0];
+  const pub = req.user.keys[1];
+
+  const { badgeAddress, badgeRecipient, amount } = req.body;
+
+  try {
+    const userWallet = new Wallet({ priv, pub }, bc);
+    const nomination = userWallet.nominate(
+      badgeAddress,
+      badgeRecipient,
+      amount
+    );
+
+    mempool.addNomination(nomination);
     res.redirect('mempool');
   } catch (error) {
     next(error);
