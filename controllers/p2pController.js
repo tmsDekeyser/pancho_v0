@@ -16,19 +16,6 @@ const transactHelper = (wall, req) => {
   }
 };
 
-const nominateHelper = (wall, req) => {
-  const { amount, options } = req.body;
-  let { recipient } = req.body;
-  recipient = wall.addressBook[recipient] || recipient;
-
-  const tx = wall.createTransaction(recipient, amount, options, mempool);
-
-  if (tx) {
-    mempool.addOrUpdateTransaction(tx);
-    p2pServer.broadcastTransaction(tx);
-  }
-};
-
 //@description    Show Blockchain
 //@Route          GET api/v0/p2p/blocks
 //@Visibiity      Public
@@ -99,6 +86,7 @@ exports.nominateMain = asyncHandler(async (req, res, next) => {
     );
 
     mempool.addNomination(nomination);
+    p2pServer.broadcastNomination(nomination);
     res.redirect('mempool');
   } catch (error) {
     next(error);

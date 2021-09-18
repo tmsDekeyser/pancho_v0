@@ -6,6 +6,7 @@ const P2P_PORT = process.env.P2P_PORT || 5001;
 const MESSAGE_TYPES = {
   chain: 'CHAIN',
   transaction: 'TRANSACTION',
+  nomination: 'NOMINATION',
   clearTransactions: 'CLEAR_TRANSACTIONS',
   address: 'ADDRESS',
   peers: 'PEERS',
@@ -127,6 +128,9 @@ class P2pServer {
         case MESSAGE_TYPES.transaction:
           this.mempool.addOrUpdateTransaction(data.transaction);
           break;
+        case MESSAGE_TYPES.nomination:
+          this.mempool.addNomination(nomination);
+          break;
         case MESSAGE_TYPES.clearTransactions:
           this.mempool.clearMempool();
           break;
@@ -207,12 +211,25 @@ class P2pServer {
     );
   }
 
+  sendTransaction(socket, nomination) {
+    socket.send(
+      JSON.stringify({
+        type: MESSAGE_TYPES.nomination,
+        nomination,
+      })
+    );
+  }
+
   broadcastChain() {
     this.sockets.forEach((socket) => this.sendChain(socket));
   }
 
   broadcastTransaction(transaction) {
     this.sockets.forEach((socket) => this.sendTransaction(socket, transaction));
+  }
+
+  broadcastNomination(nomination) {
+    this.socket.forEach((socket) => this.sendNomination(socket, nomination));
   }
 
   broadcastClearTransactions() {
