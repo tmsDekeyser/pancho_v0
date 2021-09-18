@@ -7,15 +7,14 @@ Project Description
 ### Todo
 
 - [ ] Logout  
-- [ ] Add badges  
 - [ ] Block explorer  
-- [ ] Docgen  
 - [ ] Graph visualisation  
-- [ ] Multiple groups  
 
 ### In Progress
 
 - [ ] Frontend  
+- [ ] Add badges  
+- [ ] Docgen  
 
 ### Done ✓
 

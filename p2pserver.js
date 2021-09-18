@@ -138,6 +138,7 @@ class P2pServer {
           break;
         case MESSAGE_TYPES.rejection:
           this.mempool.removeNomination(data.nomId);
+          break;
         case MESSAGE_TYPES.clearTransactions:
           this.mempool.clearMempool();
           break;
