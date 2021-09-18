@@ -92,3 +92,31 @@ exports.nominateMain = asyncHandler(async (req, res, next) => {
     next(error);
   }
 });
+
+//@description    Accept or reject nomination
+//@Route          POST api/v0/p2p/nomination-decision
+//@Visibiity      Private
+exports.nominationDecision = asyncHandler(async (req, res, next) => {
+  const priv = req.user.keys[0];
+  const pub = req.user.keys[1];
+
+  const { nomId, accept, amount } = req.body;
+
+  const nomination = mempool.findNominationById(nomId);
+
+  try {
+    if (accept) {
+      const userWallet = new Wallet({ priv, pub }, bc);
+      const btx = userWallet.createBadgeTransaction(nomination, amount);
+
+      mempool.addBadgeTransaction(btx);
+      p2pServer.broadcastTransaction(btx);
+    } else {
+      mempool.removeNomination(nomination);
+      p2pServer.broadcastRejection(nomId);
+    }
+    res.redirect('mempool');
+  } catch (error) {
+    next(error);
+  }
+});

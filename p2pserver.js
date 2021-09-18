@@ -7,6 +7,7 @@ const MESSAGE_TYPES = {
   chain: 'CHAIN',
   transaction: 'TRANSACTION',
   nomination: 'NOMINATION',
+  rejection: 'REJECTION',
   clearTransactions: 'CLEAR_TRANSACTIONS',
   address: 'ADDRESS',
   peers: 'PEERS',
@@ -126,11 +127,17 @@ class P2pServer {
           this.blockchain.replaceChain(data.chain);
           break;
         case MESSAGE_TYPES.transaction:
-          this.mempool.addOrUpdateTransaction(data.transaction);
+          if (data.transaction.input.type === 'BADGE') {
+            this.mempool.addBadgeTransaction(data.transaction);
+          } else {
+            this.mempool.addOrUpdateTransaction(data.transaction);
+          }
           break;
         case MESSAGE_TYPES.nomination:
-          this.mempool.addNomination(nomination);
+          this.mempool.addNomination(data.nomination);
           break;
+        case MESSAGE_TYPES.rejection:
+          this.mempool.removeNomination(data.nomId);
         case MESSAGE_TYPES.clearTransactions:
           this.mempool.clearMempool();
           break;
@@ -211,11 +218,20 @@ class P2pServer {
     );
   }
 
-  sendTransaction(socket, nomination) {
+  sendNomination(socket, nomination) {
     socket.send(
       JSON.stringify({
         type: MESSAGE_TYPES.nomination,
         nomination,
+      })
+    );
+  }
+
+  sendRejection(socket, nomId) {
+    socket.send(
+      JSON.stringify({
+        type: MESSAGE_TYPES.rejection,
+        nomId,
       })
     );
   }
@@ -230,6 +246,10 @@ class P2pServer {
 
   broadcastNomination(nomination) {
     this.socket.forEach((socket) => this.sendNomination(socket, nomination));
+  }
+
+  broadcastRejection(nomId) {
+    this.socket.forEach((socket) => this.sendRejection(socket, nomId));
   }
 
   broadcastClearTransactions() {

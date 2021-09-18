@@ -3,6 +3,7 @@ const CryptoUtil = require('../util/cryptoUtil');
 const Transaction = require('./transaction');
 const Nomination = require('./nomiation');
 const BlockExplorer = require('../blockchain/block-explorer');
+const { BadgeTransaction } = require('./badge-transaction');
 
 class Wallet {
   constructor({ priv, pub }, blockchain) {
@@ -65,6 +66,23 @@ class Wallet {
     nomination.signature = this.sign(Nomination.nomHash(nomination.data));
 
     return nomination;
+  }
+
+  createBadgeTransaction(nomination, amount) {
+    if (amount > this.calculateFlow()) {
+      console.error('You do not have enough flow to spend');
+      return;
+    }
+
+    if (amount > nomination.badge.amount * 3) {
+      console.error('Entered amount out of bounds');
+      return;
+    }
+
+    const btx = new BadgeTransaction(this, nomination, amount);
+    btx.input.signature = this.sign(BadgeTransaction.txHash(btx.outputs));
+
+    return btx;
   }
 
   calculateBalance() {

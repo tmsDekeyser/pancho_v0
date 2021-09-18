@@ -1,7 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 
 class BadgeTransaction {
-  badgeAddress;
   constructor(senderWallet, nomination, payment) {
     this.id = uuidv4();
     this.input = {
