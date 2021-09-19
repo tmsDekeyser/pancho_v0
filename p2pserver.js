@@ -1,4 +1,5 @@
 const Websocket = require('ws');
+const fs = require('fs');
 const { IP_BOOTSTRAP, IP_PEER } = require('./config/config');
 
 const P2P_PORT = process.env.P2P_PORT || 5001;
@@ -125,6 +126,14 @@ class P2pServer {
       switch (data.type) {
         case MESSAGE_TYPES.chain:
           this.blockchain.replaceChain(data.chain);
+          fs.writeFile(
+            './blockchainJSON.txt',
+            JSON.stringify(this.blockchain),
+            (err) => {
+              if (err) throw err;
+              console.log('Writing blockchain to local file');
+            }
+          );
           break;
         case MESSAGE_TYPES.transaction:
           if (data.transaction.input.type === 'BADGE') {

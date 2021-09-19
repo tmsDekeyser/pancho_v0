@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const Transaction = require('../wallet/transaction');
 const Wallet = require('../wallet');
 const DividendTx = require('./dividend-transaction');
@@ -39,6 +41,15 @@ class Miner {
     this.mempool.clearMempool();
     this.p2pServer.broadcastChain();
     this.p2pServer.broadcastClearTransactions();
+
+    fs.writeFile(
+      './blockchainJSON.txt',
+      JSON.stringify(this.blockchain),
+      (err) => {
+        if (err) throw err;
+        console.log('Writing blockchain to local file from Miner');
+      }
+    );
   }
 
   validTransactions() {
