@@ -1,7 +1,7 @@
 const CryptoUtil = require('../util/cryptoUtil');
 
 const Transaction = require('./transaction');
-const Nomination = require('./nomiation');
+const Nomination = require('./nomination');
 const BlockExplorer = require('../blockchain/block-explorer');
 const { BadgeTransaction } = require('./badge-transaction');
 

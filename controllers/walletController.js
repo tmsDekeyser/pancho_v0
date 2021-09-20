@@ -3,6 +3,7 @@ const { bc } = require('../local/local-copy');
 const asyncHandler = require('../middleware/async');
 
 const BlockExplorer = require('../blockchain/block-explorer');
+const Wallet = require('../wallet/index');
 const User = require('../models/User');
 
 //helper functions
@@ -34,6 +35,22 @@ exports.getWalletInfoByAddress = (req, res, next) => {
 //@Visibiity      Private
 exports.getContactsMain = (req, res, next) => {
   res.json(JSON.parse(req.user.addressBook));
+};
+
+//@description    Show user badges
+//@Route          GET api/v0/wallet/badges/
+//@Visibiity      Public
+exports.getUserBadges = (req, res, next) => {
+  const priv = req.user.keys[0];
+  const pub = req.user.keys[1];
+
+  try {
+    const userWallet = new Wallet({ priv, pub }, bc);
+
+    res.json(BlockExplorer.badgeList(bc, userWallet.address));
+  } catch (error) {
+    next(error);
+  }
 };
 
 //@description    Save contacts as main node
