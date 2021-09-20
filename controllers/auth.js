@@ -2,7 +2,7 @@ const ErrorResponse = require('../util/errorResponse');
 const asyncHandler = require('../middleware/async');
 const User = require('../models/User');
 const Wallet = require('../wallet/index');
-const { bc } = require('../local-copy');
+const { bc } = require('../local/local-copy');
 const config = require('config');
 
 // @desc    Register a user

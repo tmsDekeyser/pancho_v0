@@ -6,6 +6,7 @@ const {
   getWalletInfoByAddress,
   getContactsMain,
   postContactsMain,
+  getUserBadges,
 } = require('../controllers/walletController');
 
 const { protect } = require('../middleware/auth');
@@ -17,6 +18,8 @@ const { protect } = require('../middleware/auth');
 router.route('/wallet-info').get(protect, getWalletInfoMain);
 
 router.route('/wallet-info/:address').get(getWalletInfoByAddress);
+
+router.route('/badges').get(protect, getUserBadges); // Does not need to be protected, but we use to get user.
 
 router
   .route('/contacts')

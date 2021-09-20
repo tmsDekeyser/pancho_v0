@@ -1,7 +1,9 @@
 const CryptoUtil = require('../util/cryptoUtil');
 
 const Transaction = require('./transaction');
+const Nomination = require('./nomination');
 const BlockExplorer = require('../blockchain/block-explorer');
+const { BadgeTransaction } = require('./badge-transaction');
 
 class Wallet {
   constructor({ priv, pub }, blockchain) {
@@ -52,8 +54,44 @@ class Wallet {
     return tx;
   }
 
+  nominate(badgeAddress, badgeRecipient, amount) {
+    // How do we check the balance and how much do we allow to spend?
+    const nomination = new Nomination(
+      this,
+      badgeAddress,
+      badgeRecipient,
+      amount
+    );
+
+    nomination.signature = this.sign(Nomination.nomHash(nomination.data));
+
+    return nomination;
+  }
+
+  createBadgeTransaction(nomination, amount) {
+    if (amount > this.calculateFlow()) {
+      console.error('You do not have enough flow to spend');
+      return;
+    }
+
+    if (amount > nomination.data.badge.amount * 3) {
+      console.error('Entered amount out of bounds');
+      return;
+    }
+
+    const btx = new BadgeTransaction(this, nomination, amount);
+    btx.input.signature = this.sign(BadgeTransaction.txHash(btx.outputs));
+
+    console.log(btx);
+    return btx;
+  }
+
   calculateBalance() {
     return BlockExplorer.calculateBalance(this.blockchain, this.address);
+  }
+
+  calculateFlow() {
+    return BlockExplorer.calculateFlow(this.blockchain, this.address);
   }
 
   //Generates a (bank)wallet that hands out the mining rewards and dividend

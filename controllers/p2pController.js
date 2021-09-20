@@ -1,7 +1,14 @@
 //Checked after adding authentication
-const { bc, wallet, mempool, p2pServer, miner } = require('../local-copy');
+const {
+  bc,
+  wallet,
+  mempool,
+  p2pServer,
+  miner,
+} = require('../local/local-copy');
 const Wallet = require('../wallet/index');
 const asyncHandler = require('../middleware/async');
+const BlockExplorer = require('../blockchain/block-explorer');
 
 const transactHelper = (wall, req) => {
   const { amount } = req.body;
@@ -27,14 +34,14 @@ exports.getBlocks = (req, res, next) => {
 //@Route          GET api/v0/p2p/mempool
 //@Visibiity      Public
 exports.getMempool = (req, res, next) => {
-  res.json(mempool.transactions);
+  res.json(mempool);
 };
 
 //@description    Show Known addresses on blockchain
 //@Route          GET api/v0/p2p/known-addresses
 //@Visibiity      Public
 exports.getKnownAddresses = (req, res, next) => {
-  res.json(bc.knownAddresses());
+  res.json(BlockExplorer.knownAddresses(bc));
 };
 
 //@description    Show Connected peers
@@ -62,6 +69,60 @@ exports.postTransactionMain = asyncHandler(async (req, res, next) => {
   try {
     const userWallet = new Wallet({ priv, pub }, bc);
     transactHelper(userWallet, req);
+    res.redirect('mempool');
+  } catch (error) {
+    next(error);
+  }
+});
+
+//@description    Nominate user for badge
+//@Route          POST api/v0/p2p/nominate
+//@Visibiity      Private
+exports.nominateMain = asyncHandler(async (req, res, next) => {
+  const priv = req.user.keys[0];
+  const pub = req.user.keys[1];
+
+  const { badgeAddress, badgeRecipient, amount } = req.body;
+
+  try {
+    const userWallet = new Wallet({ priv, pub }, bc);
+    const nomination = userWallet.nominate(
+      badgeAddress,
+      badgeRecipient,
+      amount
+    );
+
+    mempool.addNomination(nomination);
+    p2pServer.broadcastNomination(nomination);
+    res.redirect('mempool');
+  } catch (error) {
+    next(error);
+  }
+});
+
+//@description    Accept or reject nomination
+//@Route          POST api/v0/p2p/nomination-decision
+//@Visibiity      Private
+exports.nominationDecision = asyncHandler(async (req, res, next) => {
+  const priv = req.user.keys[0];
+  const pub = req.user.keys[1];
+
+  const { nomId, accept, amount } = req.body;
+
+  const nomination = mempool.findNominationById(nomId);
+
+  try {
+    if (accept) {
+      const userWallet = new Wallet({ priv, pub }, bc);
+      const btx = userWallet.createBadgeTransaction(nomination, amount);
+
+      mempool.addBadgeTransaction(btx);
+      mempool.removeNomination(nomId);
+      p2pServer.broadcastTransaction(btx);
+    } else {
+      mempool.removeNomination(nomId);
+      p2pServer.broadcastRejection(nomId);
+    }
     res.redirect('mempool');
   } catch (error) {
     next(error);

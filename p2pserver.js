@@ -1,4 +1,5 @@
 const Websocket = require('ws');
+const fs = require('fs');
 const { IP_BOOTSTRAP, IP_PEER } = require('./config/config');
 
 const P2P_PORT = process.env.P2P_PORT || 5001;
@@ -6,6 +7,8 @@ const P2P_PORT = process.env.P2P_PORT || 5001;
 const MESSAGE_TYPES = {
   chain: 'CHAIN',
   transaction: 'TRANSACTION',
+  nomination: 'NOMINATION',
+  rejection: 'REJECTION',
   clearTransactions: 'CLEAR_TRANSACTIONS',
   address: 'ADDRESS',
   peers: 'PEERS',
@@ -123,9 +126,27 @@ class P2pServer {
       switch (data.type) {
         case MESSAGE_TYPES.chain:
           this.blockchain.replaceChain(data.chain);
+          fs.writeFile(
+            './local/blockchainJSON.txt',
+            JSON.stringify(this.blockchain),
+            (err) => {
+              if (err) throw err;
+              console.log('Writing blockchain to local file');
+            }
+          );
           break;
         case MESSAGE_TYPES.transaction:
-          this.mempool.addOrUpdateTransaction(data.transaction);
+          if (data.transaction.input.type === 'BADGE') {
+            this.mempool.addBadgeTransaction(data.transaction);
+          } else {
+            this.mempool.addOrUpdateTransaction(data.transaction);
+          }
+          break;
+        case MESSAGE_TYPES.nomination:
+          this.mempool.addNomination(data.nomination);
+          break;
+        case MESSAGE_TYPES.rejection:
+          this.mempool.removeNomination(data.nomId);
           break;
         case MESSAGE_TYPES.clearTransactions:
           this.mempool.clearMempool();
@@ -207,12 +228,38 @@ class P2pServer {
     );
   }
 
+  sendNomination(socket, nomination) {
+    socket.send(
+      JSON.stringify({
+        type: MESSAGE_TYPES.nomination,
+        nomination,
+      })
+    );
+  }
+
+  sendRejection(socket, nomId) {
+    socket.send(
+      JSON.stringify({
+        type: MESSAGE_TYPES.rejection,
+        nomId,
+      })
+    );
+  }
+
   broadcastChain() {
     this.sockets.forEach((socket) => this.sendChain(socket));
   }
 
   broadcastTransaction(transaction) {
     this.sockets.forEach((socket) => this.sendTransaction(socket, transaction));
+  }
+
+  broadcastNomination(nomination) {
+    this.sockets.forEach((socket) => this.sendNomination(socket, nomination));
+  }
+
+  broadcastRejection(nomId) {
+    this.sockets.forEach((socket) => this.sendRejection(socket, nomId));
   }
 
   broadcastClearTransactions() {

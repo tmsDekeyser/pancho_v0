@@ -1,6 +1,20 @@
 class Mempool {
   constructor() {
     this.transactions = []; //could be a map (object) for lookup optimization
+    this.nominations = [];
+    this.badgeTransactions = [];
+  }
+
+  partialClearingHelper(array, idList) {
+    array = array.filter((tx) => {
+      let bool = true;
+
+      idList.forEach((id) => {
+        bool = bool && !(tx.id === id);
+      });
+
+      return bool;
+    });
   }
 
   addOrUpdateTransaction(tx) {
@@ -26,20 +40,35 @@ class Mempool {
   clearMempool() {
     console.log('clearing transactions');
     this.transactions = [];
+    this.badgeTransactions = [];
   }
 
   //When not all txs in mempool are added to blocks (not currently used)
   clearMempoolPartial(idList) {
     console.log('clearing transaction that are added to new block');
-    this.transactions = this.transactions.filter((tx) => {
-      let bool = true;
+    this.transactions = this.partialClearingHelper(this.transactions, idList);
+    this.badgeTransactions = this.partialClearingHelper(
+      this.badgeTransactions,
+      idList
+    );
+  }
 
-      idList.forEach((id) => {
-        bool = bool && !(tx.id === id);
-      });
+  addNomination(nom) {
+    this.nominations.push(nom);
+  }
 
-      return bool;
-    });
+  removeNomination(nomId) {
+    this.nominations = this.nominations.filter((nom) => nom.id !== nomId);
+  }
+
+  addBadgeTransaction(btx) {
+    this.badgeTransactions.push(btx);
+  }
+
+  findNominationById(nomId) {
+    const found = this.nominations.find((nom) => nom.id === nomId);
+    console.log(found);
+    return found;
   }
 }
 

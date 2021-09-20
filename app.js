@@ -3,7 +3,7 @@ const colors = require('colors');
 const cookieParser = require('cookie-parser');
 const errorHandler = require('./middleware/error');
 
-const { p2pServer } = require('./local-copy');
+const { p2pServer } = require('./local/local-copy');
 //MongoDB database to store user profiles (and keys in the demo, encrypted)
 const connectDB = require('./config/db');
 

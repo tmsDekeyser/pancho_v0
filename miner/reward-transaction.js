@@ -10,6 +10,7 @@ class RewardTx extends Transaction {
 
   correct() {
     this.input.balance = REWARD;
+    this.input.type = 'REWARD';
     delete this.outputs['BLOCKCHAIN_BANK'];
   }
 

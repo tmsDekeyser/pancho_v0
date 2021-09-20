@@ -1,0 +1,191 @@
+{
+  "chain": [
+    {
+      "index": 0,
+      "timestamp": 1000000,
+      "lastHash": "0xplaceholder",
+      "nonce": 0,
+      "hash": "bc51cf2efbf57ae13c0d67f0529eee877541942e8456fa347b441075f1b12b7e",
+      "data": {
+        "bronze": "0xbronze",
+        "silver": "0xsilver",
+        "gold": "0xgold"
+      }
+    },
+    {
+      "index": 1,
+      "timestamp": 1632123129433,
+      "lastHash": "bc51cf2efbf57ae13c0d67f0529eee877541942e8456fa347b441075f1b12b7e",
+      "nonce": 240,
+      "hash": "000fdc9e9c0fe2e8811bd37cd586c181ea4c44c3f683e463c5a810358f61bdf5",
+      "data": [
+        {
+          "id": "f91603a9-2418-4472-9524-a3c17eefe0b9",
+          "outputs": {
+            "0445ed4f67a660c0e2e91f09d46d4adda3bbc914f88fef778f574b8cdb045356583733e2ea1f79ed294cc08cef331ac4c3f86242e154c46d70c1ab9e7ac53e79e3": 15,
+            "0402839c80008abc2d3f84429be89b22051b59345fdb2ea76b3e02e0c285c7391c4f1246f8af140b64be19fc894e426a3a2d40d416bf7a1c20bbf2626402ebdc32": 85
+          },
+          "input": {
+            "time": 1632123117878,
+            "type": "REGULAR",
+            "balance": 100,
+            "address": "0402839c80008abc2d3f84429be89b22051b59345fdb2ea76b3e02e0c285c7391c4f1246f8af140b64be19fc894e426a3a2d40d416bf7a1c20bbf2626402ebdc32",
+            "signature": {
+              "r": "5d796f3fb5f29bce9214aa17991670e5b91942143b1e3730fdd544cce2692074",
+              "s": "dac3ea058b96734decf7294f80b12e9d9be453faeef73acd80f6a9983e14e358",
+              "recoveryParam": 1
+            }
+          }
+        },
+        {
+          "id": "e429ddfb-ca7f-43bc-9673-696aba9827f6",
+          "outputs": {
+            "040524847778f05e2b656267a167db411523c7522d0d25771b9d915b997ef2fdd76fd8d7fb6af2330652d6ea1271910a93e01b1179b6f91e2af02a33f3bb33d93d": 50
+          },
+          "input": {
+            "time": 1632123129429,
+            "type": "REWARD",
+            "balance": 50,
+            "address": "BLOCKCHAIN_BANK",
+            "signature": {
+              "r": "a888c410c9c5404fa73ac5e87710b055b7a9b29a7798e271bfc109db52f99186",
+              "s": "543c2c8daa7580d2b2ea70c6cb7a46b46654933595ad6212fa95d77e6e1c5467",
+              "recoveryParam": 1
+            }
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "timestamp": 1632123538056,
+      "lastHash": "000fdc9e9c0fe2e8811bd37cd586c181ea4c44c3f683e463c5a810358f61bdf5",
+      "nonce": 487,
+      "hash": "00068ee9b39798d19df39f298a59acb5aabf06d70332837e3605f2d755157bde",
+      "data": [
+        {
+          "id": "9efa0dd0-5953-4d71-ab84-4e55b7017d95",
+          "outputs": {
+            "040524847778f05e2b656267a167db411523c7522d0d25771b9d915b997ef2fdd76fd8d7fb6af2330652d6ea1271910a93e01b1179b6f91e2af02a33f3bb33d93d": 50
+          },
+          "input": {
+            "time": 1632123538034,
+            "type": "REWARD",
+            "balance": 50,
+            "address": "BLOCKCHAIN_BANK",
+            "signature": {
+              "r": "fb495d72608ff00e87efd8df8f8b7bf6d94e477c530dadeec3f9501669182050",
+              "s": "e6f985c5025deb60c96c3b1412a930efb328d8f8f918586d18503fe9654e7750",
+              "recoveryParam": 1
+            }
+          }
+        },
+        {
+          "id": "36e90b06-a84f-4e68-a33a-618628c3ffe5",
+          "outputs": {
+            "0445ed4f67a660c0e2e91f09d46d4adda3bbc914f88fef778f574b8cdb045356583733e2ea1f79ed294cc08cef331ac4c3f86242e154c46d70c1ab9e7ac53e79e3": 20,
+            "0402839c80008abc2d3f84429be89b22051b59345fdb2ea76b3e02e0c285c7391c4f1246f8af140b64be19fc894e426a3a2d40d416bf7a1c20bbf2626402ebdc32": 20,
+            "040524847778f05e2b656267a167db411523c7522d0d25771b9d915b997ef2fdd76fd8d7fb6af2330652d6ea1271910a93e01b1179b6f91e2af02a33f3bb33d93d": 20
+          },
+          "input": {
+            "time": 1632123538038,
+            "type": "DIVIDEND",
+            "balance": 60,
+            "address": "BLOCKCHAIN_BANK",
+            "signature": {
+              "r": "27ffc674213c04f69a1bda2e61e875e4d38e55e39a0857d0eee9e0f85ebbe27",
+              "s": "1887e0fe0b6d4f05ff4bac750e7a3dbda85d246204fb9f7d3a351a9eac74af78",
+              "recoveryParam": 0
+            }
+          }
+        }
+      ]
+    },
+    {
+      "index": 3,
+      "timestamp": 1632129745015,
+      "lastHash": "00068ee9b39798d19df39f298a59acb5aabf06d70332837e3605f2d755157bde",
+      "nonce": 497,
+      "hash": "000355e6cdd48e16318b2f5fcc76d2150cb979cef0acf7286b0a424e09541600",
+      "data": [
+        {
+          "id": "c418c261-2c78-4dd3-b56f-1ad43f149f86",
+          "input": {
+            "time": 1632129740465,
+            "type": "BADGE",
+            "address": "0445ed4f67a660c0e2e91f09d46d4adda3bbc914f88fef778f574b8cdb045356583733e2ea1f79ed294cc08cef331ac4c3f86242e154c46d70c1ab9e7ac53e79e3",
+            "nominationId": "d7be9e51-e098-43e0-8724-67fc21b5ec22",
+            "nominationSig": {
+              "r": "52a1d70375bb3b8f414e0599c020b5d0b90449298a22163c880f7c851af6cc64",
+              "s": "bc46cd4af3595b844cd1367d32302546c05a204a0ee6777e5fbadc36493d7a00",
+              "recoveryParam": 1
+            },
+            "signature": {
+              "r": "bc89ae75dbc27978a7c7f253d45fd187a06f151b8424ef88510466d5807f755d",
+              "s": "bcb3bd503d625254f1f290683cfb0555275d02bab0ed7559a8baabe02cf97646",
+              "recoveryParam": 1
+            }
+          },
+          "nomination": {
+            "id": "d7be9e51-e098-43e0-8724-67fc21b5ec22",
+            "data": {
+              "time": 1632129714666,
+              "type": "NOMINATION",
+              "badge": {
+                "badgeAddress": "0xbronze",
+                "badgeRecipient": "0445ed4f67a660c0e2e91f09d46d4adda3bbc914f88fef778f574b8cdb045356583733e2ea1f79ed294cc08cef331ac4c3f86242e154c46d70c1ab9e7ac53e79e3",
+                "amount": 5
+              },
+              "address": "0402839c80008abc2d3f84429be89b22051b59345fdb2ea76b3e02e0c285c7391c4f1246f8af140b64be19fc894e426a3a2d40d416bf7a1c20bbf2626402ebdc32"
+            },
+            "signature": {
+              "r": "52a1d70375bb3b8f414e0599c020b5d0b90449298a22163c880f7c851af6cc64",
+              "s": "bc46cd4af3595b844cd1367d32302546c05a204a0ee6777e5fbadc36493d7a00",
+              "recoveryParam": 1
+            }
+          },
+          "outputs": {
+            "0445ed4f67a660c0e2e91f09d46d4adda3bbc914f88fef778f574b8cdb045356583733e2ea1f79ed294cc08cef331ac4c3f86242e154c46d70c1ab9e7ac53e79e3": 10,
+            "0402839c80008abc2d3f84429be89b22051b59345fdb2ea76b3e02e0c285c7391c4f1246f8af140b64be19fc894e426a3a2d40d416bf7a1c20bbf2626402ebdc32": 5
+          }
+        },
+        {
+          "id": "38ee9077-cd7e-4ea6-807c-2f07ca9d92ff",
+          "outputs": {
+            "04168e98990cf246ae4730b9e5df565e43b1c847ce53e486ca736b3aee86299739bd2b42ace167d483d247e5925a4decc4d03cedc4ed0fb2f02407f41656685f4f": 50
+          },
+          "input": {
+            "time": 1632129744985,
+            "type": "REWARD",
+            "balance": 50,
+            "address": "BLOCKCHAIN_BANK",
+            "signature": {
+              "r": "40720d62748560d4837bc766c17f245016bac80224cfd278f16981f549bc63bc",
+              "s": "3843e928b2f03d92701ec123bc9a9694a10567f77c177c8aa8143d68314d6234",
+              "recoveryParam": 0
+            }
+          }
+        },
+        {
+          "id": "8a4d8b25-0f5b-4e92-8e46-88e8db2286be",
+          "outputs": {
+            "0445ed4f67a660c0e2e91f09d46d4adda3bbc914f88fef778f574b8cdb045356583733e2ea1f79ed294cc08cef331ac4c3f86242e154c46d70c1ab9e7ac53e79e3": 20,
+            "0402839c80008abc2d3f84429be89b22051b59345fdb2ea76b3e02e0c285c7391c4f1246f8af140b64be19fc894e426a3a2d40d416bf7a1c20bbf2626402ebdc32": 20,
+            "040524847778f05e2b656267a167db411523c7522d0d25771b9d915b997ef2fdd76fd8d7fb6af2330652d6ea1271910a93e01b1179b6f91e2af02a33f3bb33d93d": 20
+          },
+          "input": {
+            "time": 1632129744992,
+            "type": "DIVIDEND",
+            "balance": 60,
+            "address": "BLOCKCHAIN_BANK",
+            "signature": {
+              "r": "920f7ffc7db2451fca2005f1b27a07636c7309f3be755d37f6d0b0004df218ab",
+              "s": "44abf3ca40f03e96300b8de069fe9abad4c7d26a3a391421d1cbc110b54e9f78",
+              "recoveryParam": 1
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

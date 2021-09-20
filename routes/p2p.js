@@ -8,6 +8,8 @@ const {
   getPeers,
   mineBlock,
   postTransactionMain,
+  nominateMain,
+  nominationDecision,
 } = require('../controllers/p2pController');
 
 const { protect, authorize } = require('../middleware/auth');
@@ -23,5 +25,9 @@ router.route('/peers').get(protect, authorize('peer', 'admin'), getPeers);
 router.route('/mine').post(protect, authorize('peer', 'admin'), mineBlock);
 
 router.route('/transact').post(protect, postTransactionMain);
+
+router.route('/nominate').post(protect, nominateMain);
+
+router.route('/nomination-decision').post(protect, nominationDecision);
 
 module.exports = router;

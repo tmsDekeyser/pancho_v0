@@ -1,10 +1,17 @@
-const Blockchain = require('./blockchain');
-const P2pServer = require('./p2pserver');
-const Wallet = require('./wallet');
-const Mempool = require('./wallet/mempool');
-const Miner = require('./miner/');
+const fs = require('fs');
+const path = require('path');
+
+const Blockchain = require('../blockchain');
+const P2pServer = require('../p2pserver');
+const Wallet = require('../wallet');
+const Mempool = require('../wallet/mempool');
+const Miner = require('../miner');
 
 const bc = new Blockchain();
+const bcFromFile = JSON.parse(fs.readFileSync('./local/blockchainJSON.txt'));
+
+bc.replaceChain(bcFromFile.chain);
+
 const wallet = new Wallet({ priv: null, pub: null }, bc);
 const mempool = new Mempool();
 const p2pServer = new P2pServer(bc, mempool);
