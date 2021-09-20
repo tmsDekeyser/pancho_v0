@@ -1,9 +1,11 @@
 const fs = require('fs');
 
 const Transaction = require('../wallet/transaction');
+const { BadgeTransaction } = require('../wallet/badge-transaction');
 const Wallet = require('../wallet');
 const DividendTx = require('./dividend-transaction');
 const RewardTx = require('./reward-transaction');
+const BlockExplorer = require('../blockchain/block-explorer');
 
 class Miner {
   constructor({ blockchain, wallet, mempool, p2pServer }) {
@@ -15,7 +17,11 @@ class Miner {
 
   mine() {
     //find valid transactions
-    const validTxs = this.validTransactions();
+    const validRtxs = this.validTransactions();
+    const validBtxs = this.validBadgeTransactions();
+
+    const validTxs = validRtxs.concat(validBtxs);
+
     //add reward and dividend Transaction
     const rewardTx = new RewardTx(
       Wallet.bankWallet(this.blockchain),
@@ -30,9 +36,11 @@ class Miner {
         Miner.numberOfDividendRecipients(this.blockchain)
       );
 
-      Object.keys(this.blockchain.knownAddresses()).forEach((recipient) => {
-        dividendTx.update(Wallet.bankWallet(this.blockchain), recipient);
-      });
+      Object.keys(BlockExplorer.knownAddresses(this.blockchain)).forEach(
+        (recipient) => {
+          dividendTx.update(Wallet.bankWallet(this.blockchain), recipient);
+        }
+      );
       validTxs.push(dividendTx);
     }
 
@@ -43,11 +51,11 @@ class Miner {
     this.p2pServer.broadcastClearTransactions();
 
     fs.writeFile(
-      './blockchainJSON.txt',
+      './local/blockchainJSON.txt',
       JSON.stringify(this.blockchain),
       (err) => {
         if (err) throw err;
-        console.log('Writing blockchain to local file from Miner');
+        //console.log('Writing blockchain to local file from Miner');
       }
     );
   }
@@ -58,8 +66,14 @@ class Miner {
     });
   }
 
+  validBadgeTransactions() {
+    return this.mempool.badgeTransactions.filter((btx) => {
+      return BadgeTransaction.verifyBtx(btx, this.blockchain);
+    });
+  }
+
   static numberOfDividendRecipients(blockchain) {
-    const knownAddresses = blockchain.knownAddresses();
+    const knownAddresses = BlockExplorer.knownAddresses(blockchain);
     return Object.keys(knownAddresses).length;
   }
 }

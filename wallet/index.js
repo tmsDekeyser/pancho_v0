@@ -74,7 +74,7 @@ class Wallet {
       return;
     }
 
-    if (amount > nomination.badge.amount * 3) {
+    if (amount > nomination.data.badge.amount * 3) {
       console.error('Entered amount out of bounds');
       return;
     }
@@ -82,6 +82,7 @@ class Wallet {
     const btx = new BadgeTransaction(this, nomination, amount);
     btx.input.signature = this.sign(BadgeTransaction.txHash(btx.outputs));
 
+    console.log(btx);
     return btx;
   }
 

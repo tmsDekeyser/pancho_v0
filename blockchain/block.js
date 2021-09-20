@@ -18,7 +18,7 @@ class Block {
       lastHash: '0xplaceholder',
       nonce: 0,
       hash: '',
-      data: 'Genesis data', // Do I add a dummy transaction instead to avoid type Errors?
+      data: { bronze: '0xbronze', silver: '0xsilver', gold: '0xgold' },
     });
 
     const { index, timestamp, lastHash, nonce, data } = genesisBlock;

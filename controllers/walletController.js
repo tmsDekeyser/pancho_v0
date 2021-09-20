@@ -1,5 +1,5 @@
 //Checked after adding authentication
-const { bc } = require('../local-copy');
+const { bc } = require('../local/local-copy');
 const asyncHandler = require('../middleware/async');
 
 const BlockExplorer = require('../blockchain/block-explorer');

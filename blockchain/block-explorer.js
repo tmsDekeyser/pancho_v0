@@ -86,6 +86,26 @@ class BlockExplorer {
       }
     }, 0);
   }
+
+  static knownAddresses(blockchain) {
+    //Runs through the blockchain and stores all addresses
+    //Necessary to hand out dividends to al users
+    const knownAddresses = {};
+    if (blockchain.chain.length < 2) {
+      return knownAddresses;
+    }
+    for (let i = 1; i < blockchain.chain.length; i++) {
+      let block = blockchain.chain[i];
+      block.data.forEach((tx) => {
+        Object.keys(tx.outputs).forEach((address) => {
+          if (!knownAddresses[address]) {
+            knownAddresses[address] = address;
+          }
+        });
+      });
+    }
+    return knownAddresses;
+  }
 }
 
 module.exports = BlockExplorer;

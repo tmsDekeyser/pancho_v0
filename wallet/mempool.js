@@ -64,6 +64,12 @@ class Mempool {
   addBadgeTransaction(btx) {
     this.badgeTransactions.push(btx);
   }
+
+  findNominationById(nomId) {
+    const found = this.nominations.find((nom) => nom.id === nomId);
+    console.log(found);
+    return found;
+  }
 }
 
 module.exports = Mempool;

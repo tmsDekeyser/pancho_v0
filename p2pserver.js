@@ -127,7 +127,7 @@ class P2pServer {
         case MESSAGE_TYPES.chain:
           this.blockchain.replaceChain(data.chain);
           fs.writeFile(
-            './blockchainJSON.txt',
+            './local/blockchainJSON.txt',
             JSON.stringify(this.blockchain),
             (err) => {
               if (err) throw err;
@@ -255,11 +255,11 @@ class P2pServer {
   }
 
   broadcastNomination(nomination) {
-    this.socket.forEach((socket) => this.sendNomination(socket, nomination));
+    this.sockets.forEach((socket) => this.sendNomination(socket, nomination));
   }
 
   broadcastRejection(nomId) {
-    this.socket.forEach((socket) => this.sendRejection(socket, nomId));
+    this.sockets.forEach((socket) => this.sendRejection(socket, nomId));
   }
 
   broadcastClearTransactions() {

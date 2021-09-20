@@ -1,6 +1,7 @@
 const Block = require('./block');
 require('colors');
 const Transaction = require('../wallet/transaction');
+const { BadgeTransaction } = require('../wallet/badge-transaction');
 
 class Blockchain {
   constructor() {
@@ -77,13 +78,26 @@ class Blockchain {
   }
 
   checkTxs(subChain) {
-    console.log(subChain);
+    //console.log(subChain);
     subChain.forEach((block) => {
       block.data.forEach((tx) => {
-        if (tx.input.address !== 'BLOCKCHAIN_BANK') {
-          if (!Transaction.verifyTx(tx)) {
+        switch (tx.input.type) {
+          case 'REGULAR':
+            if (!Transaction.verifyTx(tx)) {
+              return false;
+            }
+            break;
+          case 'BADGE':
+            if (!BadgeTransaction.verifyBtx(tx, this)) {
+              return false;
+            }
+            break;
+          case 'DIVIDEND':
+            break;
+          case 'REWARD':
+            break;
+          default:
             return false;
-          }
         }
       });
     });
@@ -91,25 +105,25 @@ class Blockchain {
     return true;
   }
 
-  knownAddresses() {
-    //Runs through the blockchain and stores all addresses
-    //Necessary to hand out dividends to al users
-    const knownAddresses = {};
-    if (this.chain.length < 2) {
-      return knownAddresses;
-    }
-    for (let i = 1; i < this.chain.length; i++) {
-      let block = this.chain[i];
-      block.data.forEach((tx) => {
-        Object.keys(tx.outputs).forEach((address) => {
-          if (!knownAddresses[address]) {
-            knownAddresses[address] = address;
-          }
-        });
-      });
-    }
-    return knownAddresses;
-  }
+  // knownAddresses() {
+  //   //Runs through the blockchain and stores all addresses
+  //   //Necessary to hand out dividends to al users
+  //   const knownAddresses = {};
+  //   if (this.chain.length < 2) {
+  //     return knownAddresses;
+  //   }
+  //   for (let i = 1; i < this.chain.length; i++) {
+  //     let block = this.chain[i];
+  //     block.data.forEach((tx) => {
+  //       Object.keys(tx.outputs).forEach((address) => {
+  //         if (!knownAddresses[address]) {
+  //           knownAddresses[address] = address;
+  //         }
+  //       });
+  //     });
+  //   }
+  //   return knownAddresses;
+  // }
 }
 
 module.exports = Blockchain;

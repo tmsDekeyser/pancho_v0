@@ -1,14 +1,21 @@
 //Checked after adding authentication
-const { bc, wallet, mempool, p2pServer, miner } = require('../local-copy');
+const {
+  bc,
+  wallet,
+  mempool,
+  p2pServer,
+  miner,
+} = require('../local/local-copy');
 const Wallet = require('../wallet/index');
 const asyncHandler = require('../middleware/async');
+const BlockExplorer = require('../blockchain/block-explorer');
 
 const transactHelper = (wall, req) => {
-  const { amount, options } = req.body;
+  const { amount } = req.body;
   let { recipient } = req.body;
   recipient = wall.addressBook[recipient] || recipient;
 
-  const tx = wall.createTransaction(recipient, amount, options, mempool);
+  const tx = wall.createTransaction(recipient, amount, mempool);
 
   if (tx) {
     mempool.addOrUpdateTransaction(tx);
@@ -34,7 +41,7 @@ exports.getMempool = (req, res, next) => {
 //@Route          GET api/v0/p2p/known-addresses
 //@Visibiity      Public
 exports.getKnownAddresses = (req, res, next) => {
-  res.json(bc.knownAddresses());
+  res.json(BlockExplorer.knownAddresses(bc));
 };
 
 //@description    Show Connected peers
@@ -110,9 +117,10 @@ exports.nominationDecision = asyncHandler(async (req, res, next) => {
       const btx = userWallet.createBadgeTransaction(nomination, amount);
 
       mempool.addBadgeTransaction(btx);
+      mempool.removeNomination(nomId);
       p2pServer.broadcastTransaction(btx);
     } else {
-      mempool.removeNomination(nomination);
+      mempool.removeNomination(nomId);
       p2pServer.broadcastRejection(nomId);
     }
     res.redirect('mempool');
